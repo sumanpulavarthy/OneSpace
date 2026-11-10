@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MongoDB.Driver" />
+    <PackageReference Include="Azure.Identity" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Keys" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OneSpace.Application\OneSpace.Application.csproj" />
+  </ItemGroup>
+</Project>

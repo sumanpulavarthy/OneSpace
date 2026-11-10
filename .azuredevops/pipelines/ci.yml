@@ -1,0 +1,65 @@
+# OneSpace CI: build, test, and contract/drift checks against /specs.
+trigger:
+  branches: { include: [main, develop] }
+pr:
+  branches: { include: [main, develop] }
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+  buildConfiguration: Release
+
+stages:
+  - stage: api
+    displayName: API
+    jobs:
+      - job: build_test
+        steps:
+          - task: UseDotNet@2
+            inputs: { useGlobalJson: true, workingDirectory: api }
+          - script: dotnet build api/OneSpace.sln -c $(buildConfiguration)
+            displayName: Build
+          - script: dotnet test api/tests/OneSpace.UnitTests -c $(buildConfiguration) --no-build --logger trx --results-directory artifacts/test-results/api
+            displayName: Unit tests
+          # Schema served by the API == specs/graphql/schema.graphql; allowlist == specs/mcp/tool-allowlist.json.
+          - script: dotnet test api/tests/OneSpace.ContractTests -c $(buildConfiguration) --no-build --logger trx --results-directory artifacts/test-results/api
+            displayName: Contract tests (spec drift)
+          # Testcontainers needs Docker, which the hosted Ubuntu agent provides.
+          - script: dotnet test api/tests/OneSpace.IntegrationTests -c $(buildConfiguration) --no-build --logger trx --results-directory artifacts/test-results/api
+            displayName: Integration tests
+          - task: PublishTestResults@2
+            condition: always()
+            inputs: { testResultsFormat: VSTest, testResultsFiles: 'artifacts/test-results/api/*.trx' }
+          - script: dotnet publish api/src/OneSpace.Api -c $(buildConfiguration) --no-build -o artifacts/api
+            displayName: Publish
+          - publish: artifacts/api
+            artifact: api
+
+  - stage: ui
+    displayName: UI
+    dependsOn: []
+    jobs:
+      - job: build_test
+        steps:
+          - task: NodeTool@0
+            inputs: { versionSpec: '22.x' }
+          - script: npm ci
+            workingDirectory: ui
+            displayName: Install
+          # Codegen validates every operation against specs/graphql; tsc fails on any type drift.
+          - script: npm run typecheck
+            workingDirectory: ui
+            displayName: Codegen + type check (schema drift)
+          - script: npx jest --config jest.config.js --ci --coverage
+            workingDirectory: ui
+            displayName: Unit tests
+          - task: PublishTestResults@2
+            condition: always()
+            inputs: { testResultsFormat: JUnit, testResultsFiles: 'artifacts/test-results/ui/junit.xml' }
+          - script: npx ng build
+            workingDirectory: ui
+            displayName: Build
+          - publish: ui/dist/onespace-ui/browser
+            artifact: ui

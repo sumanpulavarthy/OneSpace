@@ -1,0 +1,32 @@
+// Design tokens. Components use only these variables, so theming is one file.
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #e3e6eb;
+  --text: #1b1f24;
+  --text-muted: #5d6673;
+  --accent: #3b5bdb;
+  --on-accent: #ffffff;
+  --chip: #eef1f5;
+  --danger-surface: #fff1f1;
+  --danger-border: #f5c2c2;
+  --danger-text: #a61b1b;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418;
+    --surface: #1a1e24;
+    --border: #2c323b;
+    --text: #e8ebef;
+    --text-muted: #9aa3ae;
+    --accent: #7c95ff;
+    --on-accent: #0d1020;
+    --chip: #242a32;
+    --danger-surface: #2a1517;
+    --danger-border: #5c2a2e;
+    --danger-text: #ffb4b4;
+    color-scheme: dark;
+  }
+}

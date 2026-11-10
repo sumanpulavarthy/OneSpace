@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Anthropic" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OneSpace.Application\OneSpace.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="OneSpace.UnitTests" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The allowlist contract lives in /specs; it is embedded so the guard cannot drift from the reviewed spec. -->
+    <EmbeddedResource Include="$(OneSpaceRepoRoot)\specs\mcp\tool-allowlist.json" LogicalName="OneSpace.Assistant.tool-allowlist.json" />
+  </ItemGroup>
+</Project>

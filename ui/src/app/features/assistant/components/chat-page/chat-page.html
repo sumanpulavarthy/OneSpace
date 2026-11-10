@@ -1,0 +1,53 @@
+<section class="chat">
+  @if (banner() === 'connected') {
+    <div class="banner ok" role="status">
+      Zoho People is connected. Ask your question again.
+      <button type="button" class="link" (click)="banner.set(null)">Dismiss</button>
+    </div>
+  } @else if (banner() === 'failed') {
+    <div class="banner error" role="alert">
+      Zoho People wasn't connected (consent cancelled or the link expired).
+      <button type="button" class="link" (click)="connectZoho()">Try again</button>
+    </div>
+  }
+  @if (connectError()) {
+    <div class="banner error" role="alert">{{ connectError() }}</div>
+  }
+
+  <div class="log" #log aria-live="polite">
+    @if (store.isEmpty()) {
+      <div class="welcome">
+        <h1>Hi{{ store.userName() ? ', ' + store.userName() : '' }}. What do you need?</h1>
+        <p>One question instead of six apps. Answers come from Zoho People, ComplyKaro and Microsoft 365.</p>
+        <ul class="suggestions">
+          @for (s of suggestions; track s) {
+            <li><button type="button" class="chip" (click)="useSuggestion(s)">{{ s }}</button></li>
+          }
+        </ul>
+      </div>
+    } @else {
+      @for (m of store.messages(); track m.id) {
+        <app-message-bubble [message]="m" [connecting]="zoho.busy()" (connectZoho)="connectZoho()" />
+      }
+      @if (store.pending()) {
+        <div class="typing" aria-label="OneSpace is looking that up"><span></span><span></span><span></span></div>
+      }
+    }
+  </div>
+
+  <footer class="footer">
+    <app-composer [disabled]="store.pending()" (submitted)="ask($event)" />
+    <div class="meta">
+      <span>Read-only assistant. It can't apply for leave or change anything.</span>
+      <span class="actions">
+        @if (zoho.connected()) {
+          <span>Zoho People connected ·</span>
+          <button type="button" class="link" [disabled]="zoho.busy()" (click)="zoho.disconnect()">Disconnect</button>
+        }
+        @if (!store.isEmpty()) {
+          <button type="button" class="link" (click)="store.reset()">New conversation</button>
+        }
+      </span>
+    </div>
+  </footer>
+</section>

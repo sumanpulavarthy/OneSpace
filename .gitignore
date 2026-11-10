@@ -1,0 +1,19 @@
+# Build outputs (never source)
+artifacts/
+test-results/
+**/bin/
+**/obj/
+**/TestResults/
+*.user
+.vs/
+
+# UI
+ui/node_modules/
+ui/dist/
+ui/.angular/
+ui/src/app/graphql/generated.ts
+
+# Local secrets / overrides
+*.local.json
+appsettings.*.local.json
+.env

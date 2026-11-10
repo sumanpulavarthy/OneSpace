@@ -1,0 +1,42 @@
+[
+  {
+    "id": "sample-wfh-001",
+    "title": "Work From Home Policy",
+    "category": "Workplace",
+    "sourceUrl": null,
+    "sourceUpdatedAt": "2026-06-01T00:00:00Z",
+    "content": "SAMPLE DATA - replace with the ComplyKaro sync.\n\nEligibility: Employees who have completed probation may work from home up to two days per week with their manager's approval.\n\nHow to request: Agree WFH days with your manager and mark them in your Outlook calendar. Recurring arrangements must be recorded in Zoho People.\n\nExpectations: Be reachable on Teams during core hours (10:00-16:00 IST) and attend in-person meetings when requested."
+  },
+  {
+    "id": "sample-leave-002",
+    "title": "Leave Policy",
+    "category": "HR",
+    "sourceUrl": null,
+    "sourceUpdatedAt": "2026-04-15T00:00:00Z",
+    "content": "SAMPLE DATA - replace with the ComplyKaro sync.\n\nAnnual leave: Full-time employees accrue 18 days of earned leave per year. Up to 10 unused days carry forward.\n\nSick leave: 8 days per year. A medical certificate is required for absences longer than 2 consecutive days.\n\nApplying: Apply for leave in Zoho People at least 5 working days in advance for planned leave."
+  },
+  {
+    "id": "sample-travel-003",
+    "title": "Travel and Reimbursement Policy",
+    "category": "Finance",
+    "sourceUrl": null,
+    "sourceUpdatedAt": "2026-03-10T00:00:00Z",
+    "content": "SAMPLE DATA - replace with the ComplyKaro sync.\n\nApproval: Business travel requires manager approval before booking.\n\nClaims: Submit reimbursement claims with receipts within 30 days of travel. Claims are paid in the next payroll cycle.\n\nLimits: Economy class for flights under 6 hours. Hotel limits vary by city tier."
+  },
+  {
+    "id": "sample-conduct-004",
+    "title": "Code of Conduct",
+    "category": "Compliance",
+    "sourceUrl": null,
+    "sourceUpdatedAt": "2026-01-20T00:00:00Z",
+    "content": "SAMPLE DATA - replace with the ComplyKaro sync.\n\nRespect: Treat colleagues, customers and partners with respect. Harassment and discrimination are not tolerated.\n\nConflicts of interest: Declare any outside employment or financial interest that could conflict with your role.\n\nReporting: Raise concerns with your manager, HR, or the confidential ethics line."
+  },
+  {
+    "id": "sample-it-005",
+    "title": "Acceptable Use of IT Systems",
+    "category": "IT",
+    "sourceUrl": null,
+    "sourceUpdatedAt": "2026-05-05T00:00:00Z",
+    "content": "SAMPLE DATA - replace with the ComplyKaro sync.\n\nDevices: Only company-managed devices may access customer data.\n\nPasswords: Use multi-factor authentication for all company accounts. Never share credentials.\n\nSoftware: Install software only from the company portal. Report lost devices to IT within 24 hours."
+  }
+]

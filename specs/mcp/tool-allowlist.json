@@ -1,0 +1,60 @@
+{
+  "$comment": "Binding contract (PRD FR-5, Section 14). Deny-by-default: only tools listed in 'allowed' may reach the Zoho MCP server. Widening this list is a deliberate, reviewed scope decision — never inferred from tools/list. Argument names verified against the live Zoho schemas on 2026-11-10 (data_select, not dataSelect).",
+  "version": "phase-0",
+  "system": "ZohoPeople",
+  "defaultPolicy": "deny",
+  "allowed": [
+    {
+      "name": "getLeaveBalance",
+      "purpose": "Leave balance for the signed-in employee"
+    },
+    {
+      "name": "fetchLeaveTypes",
+      "purpose": "Leave types available to the signed-in employee"
+    },
+    {
+      "name": "listholidays",
+      "purpose": "Holiday calendar"
+    },
+    {
+      "name": "getLeaveRecords",
+      "purpose": "Leave records — self scope only",
+      "requiredArguments": {
+        "data_select": "MINE"
+      }
+    },
+    {
+      "name": "getTeamMembersOnLeave",
+      "purpose": "Team members on leave"
+    },
+    {
+      "name": "getEmployeeShiftDetails",
+      "purpose": "Shift details - self scope only (emailId is bound to the caller by the MCP client)"
+    }
+  ],
+  "excludedAdminReadTools": [
+    "fetchLeaveTypeDetails",
+    "getAdminEnrollmentBeneficiaries"
+  ],
+  "deniedVerbPrefixes": [
+    "apply",
+    "cancel",
+    "add",
+    "edit",
+    "delete",
+    "approve",
+    "deny",
+    "terminate",
+    "waive",
+    "withdraw",
+    "publish",
+    "unpublish",
+    "enable",
+    "disable",
+    "create",
+    "complete",
+    "submit",
+    "sumbit",
+    "start"
+  ]
+}

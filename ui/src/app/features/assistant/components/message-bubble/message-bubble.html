@@ -1,0 +1,34 @@
+@switch (message().role) {
+  @case ('user') {
+    <div class="bubble user">{{ $any(message()).text }}</div>
+  }
+  @case ('assistant') {
+    <div class="bubble assistant">
+      <p class="answer">{{ $any(message()).answer.answer }}</p>
+      @if (sources().length > 0) {
+        <ul class="sources" aria-label="Sources">
+          @for (source of sources(); track source.label) {
+            <li class="source" [attr.data-system]="source.system" [title]="source.reference ?? ''">
+              <span class="system">{{ systemLabel(source.system) }}</span>
+              <span class="label">{{ source.label }}</span>
+            </li>
+          }
+        </ul>
+      }
+      @if (needsZoho()) {
+        <div class="connect">
+          <button type="button" class="primary" [disabled]="connecting()" (click)="connectZoho.emit()">
+            {{ connecting() ? 'Opening Zoho…' : 'Connect Zoho People' }}
+          </button>
+          <span>One-time sign-in. OneSpace only reads your own data.</span>
+        </div>
+      }
+      @if (blockedCount() > 0) {
+        <p class="note">OneSpace is read-only: {{ blockedCount() }} action(s) were not performed.</p>
+      }
+    </div>
+  }
+  @case ('error') {
+    <div class="bubble error" role="alert">{{ $any(message()).text }}</div>
+  }
+}

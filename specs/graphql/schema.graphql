@@ -1,0 +1,137 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  me: Me!
+  myProfile: EmployeeProfile! @cost(weight: "10")
+  leaveBalance: String! @cost(weight: "10")
+  searchPolicies(query: String!, limit: Int! = 5): [PolicySearchResult!]!
+    @cost(weight: "10")
+  recentQueries(limit: Int! = 20): [QueryLogEntry!]! @cost(weight: "10")
+  zohoConnection: ZohoConnectionStatus! @cost(weight: "10")
+}
+
+type Mutation {
+  ask(input: AskInput!): AssistantAnswer! @cost(weight: "10")
+  connectZoho: ConnectZohoPayload! @cost(weight: "10")
+  disconnectZoho: Boolean! @cost(weight: "10")
+}
+
+type AssistantAnswer {
+  sessionId: String!
+  answer: String!
+  intent: String!
+  sources: [SourceAttribution!]!
+  toolCalls: [ToolInvocation!]!
+  latencyMs: Long!
+}
+
+type ConnectZohoPayload {
+  authorizationUrl: String!
+}
+
+type EmployeeProfile {
+  displayName: String!
+  email: String
+  jobTitle: String
+  department: String
+  officeLocation: String
+}
+
+type Me {
+  id: String!
+  displayName: String!
+  userPrincipalName: String!
+  email: String
+}
+
+type PolicyDocument {
+  id: String!
+  title: String!
+  category: String!
+  content: String!
+  sourceUrl: String
+  sourceUpdatedAt: DateTime!
+  syncedAt: DateTime!
+}
+
+type PolicySearchResult {
+  document: PolicyDocument!
+  score: Float!
+  snippet: String!
+}
+
+type QueryLogEntry {
+  id: String!
+  userId: String!
+  sessionId: String!
+  question: String!
+  intent: String!
+  systemsCalled: [String!]!
+  toolCalls: [ToolInvocation!]!
+  responseSummary: String!
+  failed: Boolean!
+  latencyMs: Long!
+  createdAt: DateTime!
+}
+
+type SourceAttribution {
+  system: SourceSystem!
+  label: String!
+  reference: String
+}
+
+type ToolInvocation {
+  name: String!
+  system: SourceSystem!
+  outcome: ToolInvocationOutcome!
+  durationMs: Long!
+  detail: String
+}
+
+type ZohoConnectionStatus {
+  connected: Boolean!
+  connectedAt: DateTime
+  scopes: [String!]!
+}
+
+input AskInput {
+  question: String!
+  sessionId: String
+}
+
+enum SourceSystem {
+  ZOHO_PEOPLE
+  COMPLY_KARO
+  MICROSOFT365
+  ONE_SPACE
+}
+
+enum ToolInvocationOutcome {
+  SUCCEEDED
+  FAILED
+  BLOCKED
+  CONNECTION_REQUIRED
+}
+
+"The `DateTime` scalar type represents a date and time with time zone offset information."
+scalar DateTime
+  @specifiedBy(url: "https://scalars.graphql.org/chillicream/date-time.html")
+
+"The `Long` scalar type represents a signed 64-bit integer."
+scalar Long
+  @specifiedBy(url: "https://scalars.graphql.org/chillicream/long.html")
+
+"The purpose of the `cost` directive is to define a `weight` for GraphQL types, fields, and arguments. Static analysis can use these weights when calculating the overall cost of a query or response."
+directive @cost(
+  "The `weight` argument defines what value to add to the overall cost for every appearance, or possible appearance, of a type, field, argument, etc."
+  weight: String!
+) on
+  | SCALAR
+  | OBJECT
+  | FIELD_DEFINITION
+  | ARGUMENT_DEFINITION
+  | ENUM
+  | INPUT_FIELD_DEFINITION
