@@ -116,6 +116,15 @@ public class AssistantToolboxTests
 
         public Task<IReadOnlyList<CalendarEntry>> GetMyCalendarAsync(DateTimeOffset from, DateTimeOffset to, CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<CalendarEntry>>([]);
+
+        public Task<EmployeeProfile?> GetMyManagerAsync(CancellationToken cancellationToken) => Task.FromResult<EmployeeProfile?>(null);
+        public Task<IReadOnlyList<EmployeeProfile>> GetMyDirectReportsAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<EmployeeProfile>>([]);
+        public Task<PresenceStatus> GetMyPresenceAsync(CancellationToken cancellationToken) => Task.FromResult(new PresenceStatus("Available", "Available"));
+        public Task<IReadOnlyList<MailMessageSummary>> GetMyMessagesAsync(string? search, int top, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<MailMessageSummary>>([]);
+        public Task<IReadOnlyList<DriveItemSummary>> GetMyFilesAsync(string? search, int top, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<DriveItemSummary>>([]);
+        public Task<IReadOnlyList<TeamSummary>> GetMyTeamsAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<TeamSummary>>([]);
+        public Task<IReadOnlyList<ChatSummary>> GetMyChatsAsync(int top, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<ChatSummary>>([]);
+        public Task<IReadOnlyList<TodoTaskSummary>> GetMyTasksAsync(int top, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<TodoTaskSummary>>([]);
     }
 
     private sealed class NoPolicies : IPolicyDocumentRepository

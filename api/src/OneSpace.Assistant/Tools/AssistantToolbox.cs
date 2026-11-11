@@ -26,6 +26,16 @@ public sealed partial class AssistantToolbox(
     public const string SearchPolicies = "search_policies";
     public const string GetMyProfile = "get_my_profile";
     public const string GetMyCalendar = "get_my_calendar";
+    public const string GetMyOrg = "get_my_org";
+    public const string GetMyPresence = "get_my_presence";
+    public const string GetMyMail = "get_my_mail";
+    public const string GetMyFiles = "get_my_files";
+    public const string GetMyTeams = "get_my_teams";
+    public const string GetMyChats = "get_my_chats";
+    public const string GetMyTasks = "get_my_tasks";
+
+    private static readonly HashSet<string> Microsoft365Tools =
+        [GetMyProfile, GetMyCalendar, GetMyOrg, GetMyPresence, GetMyMail, GetMyFiles, GetMyTeams, GetMyChats, GetMyTasks];
 
     private const int MaxToolResultChars = 12_000;
 
@@ -46,7 +56,28 @@ public sealed partial class AssistantToolbox(
                 Schema()),
             new(GetMyCalendar,
                 "Get the signed-in employee's Outlook calendar entries between two ISO-8601 date-times to check availability.",
-                Schema(("start", "string", "ISO-8601 start date-time", true), ("end", "string", "ISO-8601 end date-time", true)))
+                Schema(("start", "string", "ISO-8601 start date-time", true), ("end", "string", "ISO-8601 end date-time", true))),
+            new(GetMyOrg,
+                "Get the signed-in employee's manager and direct reports from Microsoft 365 (Entra ID).",
+                Schema()),
+            new(GetMyPresence,
+                "Get the signed-in employee's current Teams presence (availability and activity).",
+                Schema()),
+            new(GetMyMail,
+                "List the signed-in employee's Outlook mail: newest messages, or messages matching a search. Returns subject, sender, date and a short preview only.",
+                Schema(("search", "string", "Optional keywords (KQL), e.g. a sender name or subject words", false), ("top", "integer", "Number of messages, 1-25 (default 10)", false))),
+            new(GetMyFiles,
+                "List the signed-in employee's recently used OneDrive/SharePoint files, or search their OneDrive by name or content.",
+                Schema(("search", "string", "Optional search text", false), ("top", "integer", "Number of files, 1-25 (default 10)", false))),
+            new(GetMyTeams,
+                "List the Microsoft Teams teams the signed-in employee is a member of.",
+                Schema()),
+            new(GetMyChats,
+                "List the signed-in employee's most recently active Teams chats with a preview of the last message.",
+                Schema(("top", "integer", "Number of chats, 1-50 (default 10)", false))),
+            new(GetMyTasks,
+                "List the signed-in employee's open Microsoft To Do tasks, soonest due first.",
+                Schema(("top", "integer", "Number of tasks, 1-50 (default 20)", false)))
         };
 
         try
@@ -76,6 +107,13 @@ public sealed partial class AssistantToolbox(
                 SearchPolicies => await SearchPoliciesAsync(GetString(input, "query"), cancellationToken),
                 GetMyProfile => await GetProfileAsync(cancellationToken),
                 GetMyCalendar => await GetCalendarAsync(GetDate(input, "start"), GetDate(input, "end"), cancellationToken),
+                GetMyOrg => await GetOrgAsync(cancellationToken),
+                GetMyPresence => M365(await m365.GetMyPresenceAsync(cancellationToken), "From Teams presence"),
+                GetMyMail => M365(await m365.GetMyMessagesAsync(GetOptionalString(input, "search"), GetInt(input, "top", 10), cancellationToken), "From Outlook mail", "No messages found."),
+                GetMyFiles => M365(await m365.GetMyFilesAsync(GetOptionalString(input, "search"), GetInt(input, "top", 10), cancellationToken), "From OneDrive / SharePoint", "No files found."),
+                GetMyTeams => M365(await m365.GetMyTeamsAsync(cancellationToken), "From Microsoft Teams", "Not a member of any team."),
+                GetMyChats => M365(await m365.GetMyChatsAsync(GetInt(input, "top", 10), cancellationToken), "From Teams chats", "No chats found."),
+                GetMyTasks => M365(await m365.GetMyTasksAsync(GetInt(input, "top", 20), cancellationToken), "From Microsoft To Do", "No open tasks."),
                 _ when toolName.StartsWith(ZohoPrefix, StringComparison.Ordinal) =>
                     await CallZohoAsync(toolName[ZohoPrefix.Length..], input, cancellationToken),
                 // Unknown names are routed to the guard too, so the attempt is denied and recorded the same way.
@@ -116,7 +154,7 @@ public sealed partial class AssistantToolbox(
     public static SourceSystem SystemFor(string toolName) => toolName switch
     {
         SearchPolicies => SourceSystem.ComplyKaro,
-        GetMyProfile or GetMyCalendar => SourceSystem.Microsoft365,
+        _ when Microsoft365Tools.Contains(toolName) => SourceSystem.Microsoft365,
         _ => SourceSystem.ZohoPeople
     };
 
@@ -130,6 +168,8 @@ public sealed partial class AssistantToolbox(
         if (result.IsError && result.Text.Contains("MCP_DISABLED", StringComparison.Ordinal))
         {
             // An org-level setting, not an outage: say so, so the employee knows who can fix it.
+            // Keep Zoho's own wording in the log (truncated) so it can be quoted to Zoho support.
+            LogZohoDisabled(logger, mcpTool, result.Text.Length > 500 ? result.Text[..500] : result.Text);
             throw new SourceDisabledException(MpcDisabledMessage);
         }
 
@@ -179,6 +219,20 @@ public sealed partial class AssistantToolbox(
         return (text, [new SourceAttribution(SourceSystem.Microsoft365, "From Outlook calendar")]);
     }
 
+    private async Task<(string, IReadOnlyList<SourceAttribution>)> GetOrgAsync(CancellationToken ct)
+    {
+        var manager = await m365.GetMyManagerAsync(ct);
+        var reports = await m365.GetMyDirectReportsAsync(ct);
+        return (JsonSerializer.Serialize(new { Manager = manager, DirectReports = reports }),
+            [new SourceAttribution(SourceSystem.Microsoft365, "From Microsoft 365 directory")]);
+    }
+
+    private static (string, IReadOnlyList<SourceAttribution>) M365<T>(T result, string label, string? emptyText = null)
+    {
+        var text = emptyText is not null && result is System.Collections.ICollection { Count: 0 } ? emptyText : JsonSerializer.Serialize(result);
+        return (text, [new SourceAttribution(SourceSystem.Microsoft365, label)]);
+    }
+
     private static readonly HashSet<string> GenericPolicyWords = new(StringComparer.OrdinalIgnoreCase)
     {
         "policy", "policies", "document", "documents", "rule", "rules", "where", "where's", "find", "show", "company", "our"
@@ -199,6 +253,14 @@ public sealed partial class AssistantToolbox(
 
     private static string GetString(JsonObject? input, string name) =>
         input?[name]?.GetValue<string>() is { Length: > 0 } value ? value : throw new ArgumentException($"'{name}' is required");
+
+    private static string? GetOptionalString(JsonObject? input, string name) =>
+        input?[name] is JsonValue v && v.TryGetValue<string>(out var s) && !string.IsNullOrWhiteSpace(s) ? s : null;
+
+    private static int GetInt(JsonObject? input, string name, int fallback) =>
+        input?[name] is JsonValue v && (v.TryGetValue<int>(out var i) || (v.TryGetValue<string>(out var s) && int.TryParse(s, CultureInfo.InvariantCulture, out i)))
+            ? i
+            : fallback;
 
     private static DateTimeOffset GetDate(JsonObject? input, string name) =>
         DateTimeOffset.TryParse(GetString(input, name), CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var value)
@@ -225,6 +287,9 @@ public sealed partial class AssistantToolbox(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Blocked tool call {Tool}: {Reason}")]
     private static partial void LogToolBlocked(ILogger logger, string tool, string reason);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Zoho MCP disabled response for {Tool}: {ZohoError}")]
+    private static partial void LogZohoDisabled(ILogger logger, string tool, string zohoError);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Tool {Tool} failed")]
     private static partial void LogToolFailed(ILogger logger, Exception ex, string tool);

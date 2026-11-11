@@ -7,6 +7,8 @@
 2. The API validates the token (issuer, audience, signature, lifetime). Outside Development, missing `AzureAd` config fails startup.
 3. Every resolver acts as the caller. The schema has **no argument that selects another employee** (contract test enforces this).
 4. Microsoft 365: on-behalf-of exchange per request (`OnBehalfOfTokenProvider`); Graph applies the employee's own permissions.
+   - Read-only and `/me`-scoped only: profile, calendar, manager and direct reports, presence, mail (subject/sender/preview, never bodies), OneDrive/SharePoint files, joined Teams, chats (last-message preview), open To Do tasks.
+   - Delegated permissions (grant with admin consent on the API app registration): `User.Read`, `Calendars.Read`, `Mail.Read`, `Files.Read.All`, `Team.ReadBasic.All`, `Chat.Read`, `Tasks.Read`, `Presence.Read`. Configurable via `Integrations:Microsoft365:Scopes`.
 5. Zoho People (MCP): each employee connects once ("Connect Zoho People"). Every MCP request carries **their** Zoho OAuth token, so Zoho enforces their permissions. Defence in depth, using argument names verified against the live schemas on 2026-11-10:
    - The guard forces `data_select=MINE` on `getLeaveRecords`.
    - The MCP client removes every argument that selects other people (`employee`, `erecno`, `employee_zoho_ids`, department and location filters, …), so Zoho falls back to the token's own employee. These arguments are also hidden from the model.

@@ -6,6 +6,18 @@ schema {
 type Query {
   me: Me!
   myProfile: EmployeeProfile! @cost(weight: "10")
+  myCalendar(from: DateTime!, to: DateTime!): [CalendarEntry!]!
+    @cost(weight: "10")
+  myManager: EmployeeProfile @cost(weight: "10")
+  myDirectReports: [EmployeeProfile!]! @cost(weight: "10")
+  myPresence: PresenceStatus! @cost(weight: "10")
+  myMail(search: String, top: Int! = 10): [MailMessageSummary!]!
+    @cost(weight: "10")
+  myFiles(search: String, top: Int! = 10): [DriveItemSummary!]!
+    @cost(weight: "10")
+  myTeams: [TeamSummary!]! @cost(weight: "10")
+  myChats(top: Int! = 10): [ChatSummary!]! @cost(weight: "10")
+  myTasks(top: Int! = 20): [TodoTaskSummary!]! @cost(weight: "10")
   leaveBalance: String! @cost(weight: "10")
   searchPolicies(query: String!, limit: Int! = 5): [PolicySearchResult!]!
     @cost(weight: "10")
@@ -28,8 +40,34 @@ type AssistantAnswer {
   latencyMs: Long!
 }
 
+type CalendarEntry {
+  subject: String!
+  start: DateTime!
+  end: DateTime!
+  showAs: String!
+  location: String
+}
+
+type ChatSummary {
+  topic: String
+  chatType: String!
+  lastMessageFrom: String
+  lastMessagePreview: String
+  lastMessageAt: DateTime
+  webUrl: String
+}
+
 type ConnectZohoPayload {
   authorizationUrl: String!
+}
+
+type DriveItemSummary {
+  name: String!
+  webUrl: String
+  lastModifiedAt: DateTime
+  lastModifiedBy: String
+  sizeBytes: Long
+  isFolder: Boolean!
 }
 
 type EmployeeProfile {
@@ -38,6 +76,16 @@ type EmployeeProfile {
   jobTitle: String
   department: String
   officeLocation: String
+}
+
+type MailMessageSummary {
+  subject: String!
+  from: String
+  receivedAt: DateTime!
+  preview: String
+  isRead: Boolean!
+  importance: String!
+  webLink: String
 }
 
 type Me {
@@ -63,6 +111,11 @@ type PolicySearchResult {
   snippet: String!
 }
 
+type PresenceStatus {
+  availability: String!
+  activity: String!
+}
+
 type QueryLogEntry {
   id: String!
   userId: String!
@@ -81,6 +134,19 @@ type SourceAttribution {
   system: SourceSystem!
   label: String!
   reference: String
+}
+
+type TeamSummary {
+  displayName: String!
+  description: String
+}
+
+type TodoTaskSummary {
+  title: String!
+  listName: String!
+  status: String!
+  importance: String!
+  dueAt: DateTime
 }
 
 type ToolInvocation {

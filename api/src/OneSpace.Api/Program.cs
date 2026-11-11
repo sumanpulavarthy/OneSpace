@@ -78,9 +78,15 @@ if (app.Environment.IsDevelopment())
             allowlisted = guard.AllowedTools.Order(),
             exposedToAssistant = exposed,
             allowlistedButNotOnServer = guard.AllowedTools.Except(exposed).Order(),
-            instructions = mcp.ServerInstructions,
+            instructions = await mcp.GetServerInstructionsAsync(ct),
             schemas = exposedTools.ToDictionary(t => t.Name, t => new { t.Description, inputSchema = t.InputSchema.ToJsonString() }),
         });
+    });
+    // Diagnostics: one server tool's raw wire schema (before OneSpace strips arguments). Schema only, no data.
+    app.MapGet("/dev/zoho/tools/{name}", async (string name, IZohoPeopleClient zoho, CancellationToken ct) =>
+    {
+        var tool = (await ((ZohoMcpClient)zoho).ListServerToolsAsync(ct)).FirstOrDefault(t => t.Name == name);
+        return tool is null ? Results.NotFound() : Results.Ok(new { tool.Name, tool.Description, inputSchema = tool.InputSchema.ToJsonString() });
     });
 }
 

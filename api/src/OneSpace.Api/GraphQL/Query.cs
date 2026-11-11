@@ -22,6 +22,42 @@ public sealed class Query
     public Task<EmployeeProfile> MyProfile(IMicrosoft365Client m365, CancellationToken cancellationToken) =>
         m365.GetMyProfileAsync(cancellationToken);
 
+    /// <summary>Outlook calendar entries in a range (max 31 days).</summary>
+    public Task<IReadOnlyList<CalendarEntry>> MyCalendar(DateTimeOffset from, DateTimeOffset to, IMicrosoft365Client m365, CancellationToken cancellationToken) =>
+        to <= from || to - from > TimeSpan.FromDays(31)
+            ? throw new GraphQLException("'to' must be after 'from' and within 31 days.")
+            : m365.GetMyCalendarAsync(from, to, cancellationToken);
+
+    /// <summary>The caller's manager; null when none is set.</summary>
+    public Task<EmployeeProfile?> MyManager(IMicrosoft365Client m365, CancellationToken cancellationToken) =>
+        m365.GetMyManagerAsync(cancellationToken);
+
+    public Task<IReadOnlyList<EmployeeProfile>> MyDirectReports(IMicrosoft365Client m365, CancellationToken cancellationToken) =>
+        m365.GetMyDirectReportsAsync(cancellationToken);
+
+    /// <summary>Teams presence.</summary>
+    public Task<PresenceStatus> MyPresence(IMicrosoft365Client m365, CancellationToken cancellationToken) =>
+        m365.GetMyPresenceAsync(cancellationToken);
+
+    /// <summary>Newest Outlook messages (previews only), or KQL search results.</summary>
+    public Task<IReadOnlyList<MailMessageSummary>> MyMail(IMicrosoft365Client m365, CancellationToken cancellationToken, string? search = null, int top = 10) =>
+        m365.GetMyMessagesAsync(search, top, cancellationToken);
+
+    /// <summary>Recently used OneDrive/SharePoint files, or a OneDrive search.</summary>
+    public Task<IReadOnlyList<DriveItemSummary>> MyFiles(IMicrosoft365Client m365, CancellationToken cancellationToken, string? search = null, int top = 10) =>
+        m365.GetMyFilesAsync(search, top, cancellationToken);
+
+    public Task<IReadOnlyList<TeamSummary>> MyTeams(IMicrosoft365Client m365, CancellationToken cancellationToken) =>
+        m365.GetMyTeamsAsync(cancellationToken);
+
+    /// <summary>Most recently active Teams chats.</summary>
+    public Task<IReadOnlyList<ChatSummary>> MyChats(IMicrosoft365Client m365, CancellationToken cancellationToken, int top = 10) =>
+        m365.GetMyChatsAsync(top, cancellationToken);
+
+    /// <summary>Open Microsoft To Do tasks, soonest due first.</summary>
+    public Task<IReadOnlyList<TodoTaskSummary>> MyTasks(IMicrosoft365Client m365, CancellationToken cancellationToken, int top = 20) =>
+        m365.GetMyTasksAsync(top, cancellationToken);
+
     /// <summary>Leave balance straight from Zoho People (allowlisted tool, self-scope).</summary>
     public async Task<string> LeaveBalance(IZohoPeopleClient zoho, CancellationToken cancellationToken) =>
         (await zoho.CallToolAsync("getLeaveBalance", null, cancellationToken)).Text;

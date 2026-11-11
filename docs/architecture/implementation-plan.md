@@ -15,7 +15,7 @@ Scope: PRD v0.2, Phase 0 (4-week POC). AI Assistant only, read-only, across Zoho
 | GraphQL: `me`, `myProfile`, `leaveBalance`, `searchPolicies`, `recentQueries`, `ask` | Done, schema exported to spec |
 | Allowlist guard (FR-5) + contract tests | Done |
 | Zoho MCP JSON-RPC client (Streamable HTTP + SSE) | Done; untested against the real server |
-| Graph OBO client (profile, calendar) | Done; needs app registration + secret |
+| Graph OBO client (profile, calendar, manager/reports, presence, mail, files, Teams, chats, To Do) | Done; needs app registration + secret + delegated permissions (see FR-2) |
 | ComplyKaro sync + text search (sample data) | Done; real API pending Open Item 2 |
 | Claude tool-calling engine + rule-based dev engine | Done; needs an API key in Key Vault |
 | Query log (FR-4), 30-day TTL | Done |
@@ -33,7 +33,7 @@ Scope: PRD v0.2, Phase 0 (4-week POC). AI Assistant only, read-only, across Zoho
 | 1 | Create the Entra app registrations (SPA + API, `access_as_user` scope). Fill `app-config.json`. | Fill `AzureAd`. Deploy the Bicep to dev. Load Key Vault secrets. | Write the test plan for auth. Review FR specs. |
 | 2 | Real sign-in end to end. Check the token reaches the API. | Confirm claim mapping (`oid`, `preferred_username`) against real tokens. | Auth negative tests: expired, wrong audience, no token. |
 | 3 | Chat UX polish: loading and error states, mobile width. | **Zoho MCP:** run `initialize` and `tools/list` against `<your-org>.zohomcp.in`. Record the inbound auth model (Open Item 5) and the real argument names → `UserIdentityArguments`. | PazCare OAuth research. |
-| 4 | Accessibility pass (keyboard, screen reader). | **Graph OBO:** grant `User.Read` + `Calendars.Read`, test `myProfile` and the calendar. | ComplyKaro API research: does a document-content API exist? |
+| 4 | Accessibility pass (keyboard, screen reader). | **Graph OBO:** grant the delegated permissions listed in FR-2 rule 4, then test `myProfile`, `myCalendar`, `myMail`, `myFiles`, `myTeams`, `myChats`, `myTasks`, `myPresence`, `myManager`. | ComplyKaro API research: does a document-content API exist? |
 | 5 | Buffer | Buffer | **Decision checkpoint:** OBO support per system, written down. Pick fallbacks. |
 
 ## Week 2 — Live query path

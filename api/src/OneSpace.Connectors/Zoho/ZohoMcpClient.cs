@@ -87,6 +87,13 @@ public sealed class ZohoMcpClient(
     /// <summary>The server's <c>initialize</c> instructions (per user: Zoho includes the current employee's details).</summary>
     public string? ServerInstructions { get; private set; }
 
+    /// <summary>Initialises this (per-request) client if needed and returns the per-user server instructions.</summary>
+    public async Task<string?> GetServerInstructionsAsync(CancellationToken cancellationToken)
+    {
+        await EnsureInitializedAsync(cancellationToken);
+        return ServerInstructions;
+    }
+
     /// <summary>Every tool the MCP server exposes (unfiltered, cached). For diagnostics and catalogue checks only.</summary>
     public Task<IReadOnlyList<McpToolDescriptor>> ListServerToolsAsync(CancellationToken cancellationToken) =>
         toolCache.GetOrAddAsync(async () =>

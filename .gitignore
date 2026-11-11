@@ -17,3 +17,6 @@ ui/src/app/graphql/generated.ts
 *.local.json
 appsettings.*.local.json
 .env
+
+# MCP config (contains Zoho MCP key)
+.mcp.json
