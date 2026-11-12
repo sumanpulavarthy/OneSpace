@@ -50,6 +50,18 @@ public class ZohoMcpClientTests
     }
 
     [Fact]
+    public async Task Leave_balance_is_bound_to_the_callers_own_erecno_whatever_the_model_sends()
+    {
+        var handler = new FakeMcpServer();
+        var client = CreateClient(handler, new FakeTokens());
+
+        await client.CallToolAsync("getLeaveBalance", new JsonObject { ["employee"] = 999 }, CancellationToken.None);
+
+        var call = handler.Requests.Select(r => JsonNode.Parse(r.Body)!).Single(r => r["method"]?.GetValue<string>() == "tools/call");
+        Assert.Equal(4242L, call["params"]!["arguments"]!["body"]!["arguments"]!["employee"]!.GetValue<long>());
+    }
+
+    [Fact]
     public async Task Shift_details_are_bound_to_the_callers_email_and_stripped_of_other_selectors()
     {
         var handler = new FakeMcpServer { ExtraTools = ["ZohoPeople_getEmployeeShiftDetails"] };
@@ -176,8 +188,16 @@ public class ZohoMcpClientTests
             ToolAllowlistGuard.FromEmbeddedSpec(),
             new FixedUser(),
             tokens,
+            new FakeEmployees(),
             new ZohoToolListCache(options, TimeProvider.System),
             options);
+    }
+
+    private sealed class FakeEmployees : IZohoEmployeeDirectory
+    {
+        public Task<long?> FindErecnoAsync(string email, CancellationToken cancellationToken) =>
+            Task.FromResult<long?>(email == "me@example.com" ? 4242L : null);
+        public Task SetErecnoAsync(string email, long erecno, CancellationToken cancellationToken) => Task.CompletedTask;
     }
 
     private sealed class FixedUser : IUserContextAccessor

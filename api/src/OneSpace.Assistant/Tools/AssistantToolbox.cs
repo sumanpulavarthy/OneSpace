@@ -158,6 +158,15 @@ public sealed partial class AssistantToolbox(
                 true, [],
                 new ToolInvocation(toolName, SourceSystem.ZohoPeople, ToolInvocationOutcome.ConnectionRequired, stopwatch.ElapsedMilliseconds));
         }
+        catch (ZohoEmployeeNotMappedException ex)
+        {
+            // A setup gap, not an outage: say who can fix it.
+            LogToolFailed(logger, ex, toolName);
+            return new ToolExecution(
+                "The employee's Zoho People record is not linked to OneSpace yet. Tell them to ask the OneSpace administrator to link their Zoho employee record, then ask again.",
+                true, [],
+                new ToolInvocation(toolName, SourceSystem.ZohoPeople, ToolInvocationOutcome.Failed, stopwatch.ElapsedMilliseconds, "ErecnoNotMapped"));
+        }
         catch (SourceDisabledException ex)
         {
             LogToolFailed(logger, ex, toolName);

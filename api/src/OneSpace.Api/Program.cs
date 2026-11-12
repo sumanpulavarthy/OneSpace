@@ -90,6 +90,12 @@ if (app.Environment.IsDevelopment())
             schemas = exposedTools.ToDictionary(t => t.Name, t => new { t.Description, inputSchema = t.InputSchema.ToJsonString() }),
         });
     });
+    // Dev only: link an employee's work email to their Zoho People erecno (production: admin-maintained directory).
+    app.MapPut("/dev/zoho/employees/{email}", async (string email, long erecno, IZohoEmployeeDirectory directory, CancellationToken ct) =>
+    {
+        await directory.SetErecnoAsync(email, erecno, ct);
+        return Results.NoContent();
+    });
     // Diagnostics: one server tool's raw wire schema (before OneSpace strips arguments). Schema only, no data.
     app.MapGet("/dev/zoho/tools/{name}", async (string name, IZohoPeopleClient zoho, CancellationToken ct) =>
     {
