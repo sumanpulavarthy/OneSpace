@@ -9,12 +9,14 @@ namespace OneSpace.Assistant.Engines;
 
 /// <summary>
 /// Deterministic keyword router. Used for local development and demos without an LLM key, and as a
-/// predictable baseline in tests. Uses the same toolbox (and therefore the same guard) as the Claude engine.
+/// predictable baseline in tests. Uses the same toolbox (and therefore the same guard and the same
+/// presentation) as the LLM engine, so tables and cards look the same without an LLM.
 /// </summary>
-public sealed class RuleBasedAssistantEngine(AssistantToolbox toolbox, TimeProvider clock) : IAssistantEngine
+public sealed class RuleBasedAssistantEngine(IAssistantToolbox toolbox, TimeProvider clock) : IAssistantEngine
 {
-    public async Task<AssistantEngineResult> AnswerAsync(UserContext user, string question, CancellationToken cancellationToken)
+    public async Task<AssistantEngineResult> AnswerAsync(UserContext user, AssistantRequest request, IAssistantEventSink? events, CancellationToken cancellationToken)
     {
+        var question = request.Question;
         if (IsActionRequest(question))
         {
             return new AssistantEngineResult(
@@ -32,17 +34,22 @@ public sealed class RuleBasedAssistantEngine(AssistantToolbox toolbox, TimeProvi
                 "general", [], []);
         }
 
-        var execution = await toolbox.ExecuteAsync(route.Value.Tool, route.Value.Input, cancellationToken);
+        var execution = await toolbox.ExecuteAsync(route.Value.Tool, route.Value.Input, "t1", cancellationToken);
+        var blocks = execution.Presentation?.Blocks ?? [];
         var answer = execution.Invocation.Outcome switch
         {
-            // Tool output uses markdown headings for the LLM; the chat renders plain text.
-            ToolInvocationOutcome.Succeeded => $"{route.Value.Lead}\n\n{execution.Content.Replace("## ", "• ", StringComparison.Ordinal).Trim()}",
+            // The data is shown as blocks; text only when the source returned unstructured text.
+            ToolInvocationOutcome.Succeeded when blocks.Count > 0 => route.Value.Lead,
+            ToolInvocationOutcome.Succeeded => $"{route.Value.Lead}\n\n{(execution.Presentation?.RenderPlainText() ?? execution.Content).Trim()}",
             ToolInvocationOutcome.Blocked => "That isn't something OneSpace can do — it can only look information up.",
             ToolInvocationOutcome.ConnectionRequired => "Connect your Zoho People account so I can look that up for you, then ask again.",
             ToolInvocationOutcome.Failed when execution.Invocation.Detail == AssistantToolbox.MpcDisabledMessage => AssistantToolbox.MpcDisabledMessage,
             _ => $"{execution.Invocation.System.DisplayName()} isn't available right now, so I couldn't look that up. Please try again later."
         };
-        return new AssistantEngineResult(answer, ClaudeAssistantEngine.IntentFor([execution.Invocation]), execution.Sources, [execution.Invocation]);
+        return new AssistantEngineResult(answer, IntentClassifier.For([execution.Invocation]), execution.Sources, [execution.Invocation])
+        {
+            Blocks = execution.Invocation.Outcome == ToolInvocationOutcome.Succeeded ? blocks : []
+        };
     }
 
     /// <summary>Requests to change something (PRD V2 scope) are declined before any lookup.</summary>

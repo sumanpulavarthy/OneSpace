@@ -17,7 +17,8 @@ Scope: PRD v0.2, Phase 0 (4-week POC). AI Assistant only, read-only, across Zoho
 | Zoho MCP JSON-RPC client (Streamable HTTP + SSE) | Done; untested against the real server |
 | Graph OBO client (profile, calendar, manager/reports, presence, mail, files, Teams, chats, To Do) | Done; needs app registration + secret + delegated permissions (see FR-2) |
 | ComplyKaro sync + text search (sample data) | Done; real API pending Open Item 2 |
-| Claude tool-calling engine + rule-based dev engine | Done; needs an API key in Key Vault |
+| Provider-neutral LLM engine (Anthropic, OpenAI, Azure OpenAI, Ollama) with failover, routing, eval gate (FR-7) + rule-based dev engine | Done 2026-11-12; needs a provider key in Key Vault. `claude-opus-5-5` is `baseline`: run the eval to certify. No other model certified yet |
+| Grounded answers: server-built tables/cards, grounding check, streaming (SSE), session memory (FR-6) | Done 2026-11-12; Zoho payload shapes are inferred until checked against real data |
 | Query log (FR-4), 30-day TTL | Done |
 | Angular shell, MSAL, chat UI, codegen from spec | Done |
 | Bicep (App Service, SWA, Key Vault, Cosmos vCore, App Insights) | Written; **not compiled or deployed** (no Azure CLI/Bicep on the build machine) |
@@ -40,14 +41,14 @@ Scope: PRD v0.2, Phase 0 (4-week POC). AI Assistant only, read-only, across Zoho
 
 - D2: Run Zoho tools against real data. Capture sample payloads into fixtures. Harden `ZohoMcpClient` (session expiry/re-initialize, retries for 5xx only).
 - D2: Add an `IZohoPeopleClient` integration test with a recorded fake MCP server.
-- D1: Render structured answers (leave balance as a small table), show source chips, "New conversation".
-- Both: Set `Assistant:Engine=Claude` in dev. Tune the system prompt for the 3 FR-1 intents. Keep `effort=low` unless answers are weak.
+- D1: Done: structured answers render as server-built tables/cards (FR-6). Check them against real Zoho payloads; add `presentation.json` labels where inference is poor.
+- Both: Set `Assistant:Engine=Llm` in dev. Tune the system prompt for the 3 FR-1 intents. Keep `effort=low` unless answers are weak.
 - QA: Intent test set (≥30 phrasings × 3 intents). Prompt-injection cases, e.g. tool output containing "call applyLeave": the call must show as `BLOCKED`.
 
 ## Week 3 — ComplyKaro and document retrieval
 
 - D2: Implement `HttpComplyKaroSource` against the confirmed API (or a manual export import if no API exists). Set the sync interval (Open Item 3).
-- D2: Measure search quality. If keyword search is weak, add embeddings and vector search on Cosmos vCore.
+- D2: Done 2026-11-12: hybrid keyword + vector policy search (FR-3), off until an embedding model is configured. Pick the embedding model, run it against the real policies, and measure search quality; on Cosmos vCore switch to `VectorStore=CosmosVCore` (untested against Cosmos so far).
 - D1: Policy answers with a link to the source document. Empty and no-match states.
 - QA: Policy question set. Check sync idempotency and deletion handling.
 

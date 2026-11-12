@@ -29,26 +29,12 @@ public sealed partial class OneSpaceErrorFilter(ILoggerFactory loggerFactory) : 
     public IError OnError(IError error)
     {
         var traceId = Activity.Current?.TraceId.ToString();
-        return error.Exception switch
-        {
-            null => error,
-            ArgumentException ex => Build(error, UserMessage(ex), "BAD_USER_INPUT", traceId),
-            UnauthorizedAccessException => Build(error, "You are not signed in.", "UNAUTHENTICATED", traceId),
-            ToolBlockedException => Build(error, "That action is not available in OneSpace.", "FORBIDDEN_TOOL", traceId),
-            ZohoConnectionRequiredException => Build(error, "Connect Zoho People to see this.", "ZOHO_CONNECTION_REQUIRED", traceId),
-            var ex => LogAndBuild(error, ex, traceId)
-        };
-    }
+        if (error.Exception is null) return error;
 
-    private IError LogAndBuild(IError error, Exception ex, string? traceId)
-    {
-        LogUnhandled(logger, ex, traceId);
-        return Build(error, "Something went wrong. Try again in a moment.", "INTERNAL_ERROR", traceId);
+        var (message, code) = ErrorMapping.Map(error.Exception);
+        if (code == ErrorMapping.InternalError) LogUnhandled(logger, error.Exception, traceId);
+        return Build(error, message, code, traceId);
     }
-
-    /// <summary>ArgumentException appends " (Parameter 'x')"; employees should only see the sentence.</summary>
-    private static string UserMessage(ArgumentException ex) =>
-        ex.ParamName is null ? ex.Message : ex.Message.Replace($" (Parameter '{ex.ParamName}')", string.Empty, StringComparison.Ordinal);
 
     private static IError Build(IError error, string message, string code, string? traceId) =>
         ErrorBuilder.FromError(error)

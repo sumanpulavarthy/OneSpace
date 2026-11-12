@@ -2,9 +2,29 @@
   @case ('user') {
     <div class="bubble user">{{ $any(message()).text }}</div>
   }
+  @case ('pending') {
+    <div class="bubble assistant" aria-busy="true">
+      @if (draft()) {
+        <p class="answer">{{ draft() }}</p>
+      } @else {
+        <div class="typing" aria-label="OneSpace is looking that up"><span></span><span></span><span></span></div>
+      }
+      @if (activity()) {
+        <p class="note activity">{{ activity() }}</p>
+      }
+    </div>
+  }
   @case ('assistant') {
     <div class="bubble assistant">
       <p class="answer">{{ $any(message()).answer.answer }}</p>
+      @for (block of blocks(); track block.id) {
+        <app-answer-block [block]="block" />
+      }
+      @if (ungrounded()) {
+        <p class="note warning" role="note">
+          Some figures in this answer couldn't be matched to the source data. Rely on the tables above or check the source system.
+        </p>
+      }
       @if (sources().length > 0) {
         <ul class="sources" aria-label="Sources">
           @for (source of sources(); track source.label) {

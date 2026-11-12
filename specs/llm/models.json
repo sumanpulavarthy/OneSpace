@@ -1,0 +1,93 @@
+{
+  "$comment": "Binding contract (FR-7). The model capability matrix and the eval gate. A provider/model may serve employees only when it is listed here with toolCalling=true and certification status 'certified' (or 'baseline'). Certification = the golden-set eval (api/tests/OneSpace.Evals) passed the thresholds below; record the report file and date. 'baseline' marks the model that was in production before the gate existed and must be re-certified. 'model' is the provider's model id (for Azure OpenAI set Providers:<name>:CatalogId to the underlying model, since the deployment name varies).",
+  "version": "1",
+  "certificationThresholds": {
+    "toolSelection": 0.9,
+    "grounding": 0.95,
+    "mustMention": 0.9,
+    "judge": 4.0
+  },
+  "models": [
+    {
+      "provider": "Anthropic",
+      "model": "claude-opus-5-5",
+      "toolCalling": true,
+      "parallelToolCalls": true,
+      "reasoning": true,
+      "promptCaching": true,
+      "certification": { "status": "baseline", "notes": "Production model before the eval gate; re-certify with the eval suite." }
+    },
+    {
+      "provider": "Anthropic",
+      "model": "claude-sonnet-5-5",
+      "toolCalling": true,
+      "parallelToolCalls": true,
+      "reasoning": true,
+      "promptCaching": true,
+      "certification": { "status": "pending" }
+    },
+    {
+      "provider": "Anthropic",
+      "model": "claude-haiku-5-5",
+      "toolCalling": true,
+      "parallelToolCalls": true,
+      "reasoning": true,
+      "promptCaching": true,
+      "certification": { "status": "pending" }
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-4.1",
+      "toolCalling": true,
+      "parallelToolCalls": true,
+      "reasoning": false,
+      "promptCaching": true,
+      "certification": { "status": "pending" }
+    },
+    {
+      "provider": "OpenAI",
+      "model": "gpt-4.1-mini",
+      "toolCalling": true,
+      "parallelToolCalls": true,
+      "reasoning": false,
+      "promptCaching": true,
+      "certification": { "status": "pending" }
+    },
+    {
+      "provider": "AzureOpenAI",
+      "model": "gpt-4.1",
+      "toolCalling": true,
+      "parallelToolCalls": true,
+      "reasoning": false,
+      "promptCaching": true,
+      "certification": { "status": "pending" }
+    },
+    {
+      "provider": "AzureOpenAI",
+      "model": "gpt-4.1-mini",
+      "toolCalling": true,
+      "parallelToolCalls": true,
+      "reasoning": false,
+      "promptCaching": true,
+      "certification": { "status": "pending" }
+    },
+    {
+      "provider": "Ollama",
+      "model": "qwen2.5:14b",
+      "toolCalling": true,
+      "parallelToolCalls": false,
+      "reasoning": false,
+      "promptCaching": false,
+      "certification": { "status": "pending", "notes": "Local/offline development." }
+    },
+    {
+      "provider": "Ollama",
+      "model": "llama3.1:8b",
+      "toolCalling": true,
+      "parallelToolCalls": false,
+      "reasoning": false,
+      "promptCaching": false,
+      "certification": { "status": "pending", "notes": "Local/offline development." }
+    }
+  ]
+}

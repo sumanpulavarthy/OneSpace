@@ -23,6 +23,9 @@ stages:
             displayName: Build
           - script: dotnet test api/tests/OneSpace.UnitTests -c $(buildConfiguration) --no-build --logger trx --results-directory artifacts/test-results/api
             displayName: Unit tests
+          # Golden-set and fixture consistency only; the LLM eval itself is skipped unless ONESPACE_EVALS=1 (stage below).
+          - script: dotnet test api/tests/OneSpace.Evals -c $(buildConfiguration) --no-build --logger trx --results-directory artifacts/test-results/api
+            displayName: Eval specs
           # Schema served by the API == specs/graphql/schema.graphql; allowlist == specs/mcp/tool-allowlist.json.
           - script: dotnet test api/tests/OneSpace.ContractTests -c $(buildConfiguration) --no-build --logger trx --results-directory artifacts/test-results/api
             displayName: Contract tests (spec drift)
@@ -36,6 +39,30 @@ stages:
             displayName: Publish
           - publish: artifacts/api
             artifact: api
+
+  # LLM eval gate (FR-7). Calls a real LLM, so it runs only when queued with runEvals=true (manually or on a schedule).
+  # The 'onespace-evals' variable group holds the provider under test, named like the API's config for a provider
+  # called "eval": Assistant__Chain__0=eval, Assistant__Providers__eval__Type, __Model, __Endpoint (Azure),
+  # __MaxDataClass, plus the secret EvalProviderApiKey (secrets are not exposed to scripts unless mapped, as below).
+  - stage: evals
+    displayName: LLM eval gate
+    dependsOn: []
+    condition: eq(variables['runEvals'], 'true')
+    variables:
+      - group: onespace-evals
+    jobs:
+      - job: golden_set
+        steps:
+          - task: UseDotNet@2
+            inputs: { useGlobalJson: true, workingDirectory: api }
+          - script: dotnet test api/tests/OneSpace.Evals -c $(buildConfiguration) --logger "console;verbosity=detailed"
+            displayName: Golden set
+            env:
+              ONESPACE_EVALS: '1'
+              Assistant__Providers__eval__ApiKey: $(EvalProviderApiKey)
+          - publish: artifacts/evals
+            artifact: eval-report
+            condition: always()
 
   - stage: ui
     displayName: UI

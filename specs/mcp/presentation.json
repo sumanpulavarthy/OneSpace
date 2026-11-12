@@ -1,0 +1,138 @@
+{
+  "$comment": "Binding contract (FR-6 grounded rendering, FR-7 data governance). Says how each tool's output is shown to the employee (blocks) and to the LLM (facts), and the data class of each tool. The server builds every block from the tool's own output; the LLM never writes table or card data. Field names match case-insensitively. Tools or fields not listed fall back to 'defaults' and generic, schema-driven formatting.",
+  "version": "1",
+  "defaults": {
+    "dataClass": "Personal",
+    "maxBlockRows": 50,
+    "maxBlockColumns": 6,
+    "maxModelRows": 100,
+    "maxModelColumns": 12,
+    "hiddenFields": ["id", "_id", "etag", "@odata.etag", "uri", "zuid", "erecno", "recordId", "ownerId"],
+    "hiddenSuffixes": ["Id", "_id", "ID"],
+    "metaFields": ["status", "message", "code", "uri", "success", "errorCode", "statusCode", "responseCode"]
+  },
+  "fieldHints": {
+    "leavetype": { "label": "Leave type" },
+    "leaveTypeName": { "label": "Leave type" },
+    "from": { "label": "From" },
+    "to": { "label": "To" },
+    "fromDate": { "label": "From", "format": "Date" },
+    "toDate": { "label": "To", "format": "Date" },
+    "date": { "format": "Date" },
+    "available": { "label": "Available", "format": "Number" },
+    "booked": { "label": "Booked", "format": "Number" },
+    "balance": { "label": "Balance", "format": "Number" },
+    "remarks": { "label": "Remarks" },
+    "reason": { "label": "Reason", "sensitive": true }
+  },
+  "tools": {
+    "search_policies": {
+      "title": "Matching policies",
+      "dataClass": "Internal",
+      "fields": {
+        "Title": { "label": "Policy", "order": 1 },
+        "Category": { "order": 2 },
+        "Updated": { "label": "Last updated", "format": "Date", "order": 3 },
+        "Excerpt": { "order": 5 },
+        "Link": { "label": "Open", "format": "Link", "order": 4 }
+      }
+    },
+    "get_my_profile": {
+      "title": "Your profile",
+      "fields": {
+        "DisplayName": { "label": "Name", "order": 1 },
+        "JobTitle": { "label": "Job title", "order": 2 },
+        "Department": { "order": 3 },
+        "OfficeLocation": { "label": "Office", "order": 4 },
+        "Email": { "order": 5 }
+      }
+    },
+    "get_my_calendar": {
+      "title": "Your calendar",
+      "fields": {
+        "Subject": { "label": "Meeting", "order": 1 },
+        "Start": { "format": "DateTime", "order": 2 },
+        "End": { "format": "DateTime", "order": 3 },
+        "ShowAs": { "label": "Status", "order": 4 },
+        "Location": { "order": 5 }
+      }
+    },
+    "get_my_org": {
+      "title": "Your reporting line",
+      "fields": {
+        "Manager": { "label": "Manager" },
+        "DirectReports": { "label": "Direct reports" },
+        "DisplayName": { "label": "Name", "order": 1 },
+        "JobTitle": { "label": "Job title", "order": 2 },
+        "Department": { "order": 3 },
+        "Email": { "order": 4 },
+        "OfficeLocation": { "label": "Office", "order": 5 }
+      }
+    },
+    "get_my_presence": {
+      "title": "Your Teams status",
+      "fields": {
+        "Availability": { "order": 1 },
+        "Activity": { "order": 2 }
+      }
+    },
+    "get_my_mail": {
+      "title": "Your mail",
+      "fields": {
+        "Subject": { "order": 1 },
+        "From": { "order": 2 },
+        "ReceivedAt": { "label": "Received", "format": "DateTime", "order": 3 },
+        "Preview": { "sensitive": true, "order": 4 },
+        "IsRead": { "label": "Read", "format": "Boolean", "order": 5 },
+        "Importance": { "order": 6 },
+        "WebLink": { "label": "Open", "format": "Link", "order": 7 }
+      }
+    },
+    "get_my_files": {
+      "title": "Your files",
+      "fields": {
+        "Name": { "order": 1 },
+        "LastModifiedAt": { "label": "Modified", "format": "DateTime", "order": 2 },
+        "LastModifiedBy": { "label": "Modified by", "order": 3 },
+        "SizeBytes": { "label": "Size", "format": "Bytes", "order": 4 },
+        "WebUrl": { "label": "Open", "format": "Link", "order": 5 },
+        "IsFolder": { "hidden": true }
+      }
+    },
+    "get_my_teams": {
+      "title": "Your Teams",
+      "dataClass": "Internal",
+      "fields": {
+        "DisplayName": { "label": "Team", "order": 1 },
+        "Description": { "order": 2 }
+      }
+    },
+    "get_my_chats": {
+      "title": "Your recent chats",
+      "fields": {
+        "Topic": { "order": 1 },
+        "ChatType": { "label": "Type", "order": 2 },
+        "LastMessageFrom": { "label": "Last message from", "order": 3 },
+        "LastMessagePreview": { "label": "Last message", "sensitive": true, "order": 4 },
+        "LastMessageAt": { "label": "When", "format": "DateTime", "order": 5 },
+        "WebUrl": { "label": "Open", "format": "Link", "order": 6 }
+      }
+    },
+    "get_my_tasks": {
+      "title": "Your open tasks",
+      "fields": {
+        "Title": { "label": "Task", "order": 1 },
+        "DueAt": { "label": "Due", "format": "DateTime", "order": 2 },
+        "ListName": { "label": "List", "order": 3 },
+        "Status": { "order": 4 },
+        "Importance": { "order": 5 }
+      }
+    },
+    "zoho_getLeaveBalance": { "title": "Leave balance" },
+    "zoho_fetchLeaveTypes": { "title": "Leave types", "dataClass": "Internal" },
+    "zoho_listholidays": { "title": "Holidays", "dataClass": "Internal" },
+    "zoho_getLeaveRecords": { "title": "Your leave records" },
+    "zoho_getTeamMembersOnLeave": { "title": "Team members on leave" },
+    "zoho_getEmployeeShiftDetails": { "title": "Your shifts" }
+  }
+}

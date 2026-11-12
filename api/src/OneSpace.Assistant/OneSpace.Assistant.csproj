@@ -1,16 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <PackageReference Include="Anthropic" />
+    <PackageReference Include="Microsoft.Extensions.AI" />
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OneSpace.Application\OneSpace.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="OneSpace.UnitTests" />
+    <InternalsVisibleTo Include="OneSpace.ContractTests" />
+    <InternalsVisibleTo Include="OneSpace.Evals" />
   </ItemGroup>
   <ItemGroup>
-    <!-- The allowlist contract lives in /specs; it is embedded so the guard cannot drift from the reviewed spec. -->
+    <!-- Contracts live in /specs; they are embedded so the running code cannot drift from the reviewed specs. -->
     <EmbeddedResource Include="$(OneSpaceRepoRoot)\specs\mcp\tool-allowlist.json" LogicalName="OneSpace.Assistant.tool-allowlist.json" />
+    <EmbeddedResource Include="$(OneSpaceRepoRoot)\specs\mcp\presentation.json" LogicalName="OneSpace.Assistant.presentation.json" />
+    <EmbeddedResource Include="$(OneSpaceRepoRoot)\specs\llm\models.json" LogicalName="OneSpace.Assistant.models.json" />
   </ItemGroup>
 </Project>

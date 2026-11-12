@@ -20,8 +20,8 @@ public sealed class QueryLogRepository(MongoContext context) : IQueryLogReposito
 }
 
 /// <summary>
-/// Policy cache with full-text search. Cosmos DB for MongoDB vCore supports <c>$text</c>; vector search
-/// (embeddings) is the planned upgrade if keyword relevance proves too weak (PRD 14.1).
+/// Policy cache with full-text search. Cosmos DB for MongoDB vCore supports <c>$text</c>. Vector search over
+/// embedded passages lives in <see cref="PolicyChunkStore"/>; the two are fused by HybridPolicySearch (FR-3).
 /// </summary>
 public sealed class PolicyDocumentRepository(MongoContext context) : IPolicyDocumentRepository
 {
@@ -40,6 +40,9 @@ public sealed class PolicyDocumentRepository(MongoContext context) : IPolicyDocu
         var result = await context.PolicyDocuments.DeleteManyAsync(Builders<PolicyDocument>.Filter.Nin(x => x.Id, keepIds), cancellationToken);
         return result.DeletedCount;
     }
+
+    public async Task<IReadOnlyList<PolicyDocument>> GetAllAsync(CancellationToken cancellationToken) =>
+        await context.PolicyDocuments.Find(FilterDefinition<PolicyDocument>.Empty).ToListAsync(cancellationToken);
 
     public async Task<PolicyDocument?> GetAsync(string id, CancellationToken cancellationToken) =>
         await context.PolicyDocuments.Find(d => d.Id == id).FirstOrDefaultAsync(cancellationToken);

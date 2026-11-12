@@ -1,0 +1,83 @@
+@let b = block();
+@switch (b.kind) {
+  @case ('TABLE') {
+    <figure class="block">
+      <div class="scroll" tabindex="0" [attr.aria-label]="b.title ?? 'Table'">
+        <table>
+          @if (b.title) {
+            <caption>{{ b.title }}</caption>
+          }
+          <thead>
+            <tr>
+              @for (column of b.columns; track column.key) {
+                <th scope="col" [class.num]="numeric(column.format)">{{ column.label }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of b.rows; track $index) {
+              <tr>
+                @for (cell of row; track $index; let i = $index) {
+                  @let column = b.columns[i];
+                  <td [class.num]="numeric(column.format)">
+                    @if (column.format === 'LINK') {
+                      @if (link(cell); as href) {
+                        <a [href]="href" target="_blank" rel="noopener noreferrer">Open</a>
+                      } @else {
+                        —
+                      }
+                    } @else {
+                      {{ format(cell, column.format) }}
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <figcaption>
+        @if (truncated()) {
+          Showing {{ b.rows.length }} of {{ b.totalRows }}.
+        }
+        @if (sourceLabel()) {
+          <span class="source">From {{ sourceLabel() }}</span>
+        }
+      </figcaption>
+    </figure>
+  }
+  @case ('KEY_VALUE') {
+    <section class="block card" [attr.aria-label]="b.title ?? 'Details'">
+      @if (b.title) {
+        <h3>{{ b.title }}</h3>
+      }
+      <dl>
+        @for (item of b.items; track item.label) {
+          <div class="pair">
+            <dt>{{ item.label }}</dt>
+            <dd>
+              @if (item.format === 'LINK') {
+                @if (link(item.value); as href) {
+                  <a [href]="href" target="_blank" rel="noopener noreferrer">Open</a>
+                }
+              } @else {
+                {{ format(item.value, item.format) }}
+              }
+            </dd>
+          </div>
+        }
+      </dl>
+      @if (sourceLabel()) {
+        <p class="source">From {{ sourceLabel() }}</p>
+      }
+    </section>
+  }
+  @default {
+    <p class="block note">
+      @if (b.title) {
+        <strong>{{ b.title }}:</strong>
+      }
+      {{ b.text }}
+    </p>
+  }
+}

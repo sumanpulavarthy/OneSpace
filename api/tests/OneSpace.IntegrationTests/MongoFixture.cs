@@ -1,3 +1,4 @@
+using OneSpace.Application.Policies;
 using Microsoft.Extensions.Options;
 using OneSpace.Infrastructure.Persistence;
 using Testcontainers.MongoDb;
@@ -22,7 +23,7 @@ public sealed class MongoFixture : IAsyncLifetime
             ConnectionString = _container.GetConnectionString(),
             DatabaseName = $"onespace_test_{Guid.NewGuid():N}"
         }));
-        await new MongoIndexInitializer(Context).StartAsync(CancellationToken.None);
+        await new MongoIndexInitializer(Context, Options.Create(new RetrievalOptions())).StartAsync(CancellationToken.None);
     }
 
     public Task DisposeAsync() => _container.DisposeAsync().AsTask();

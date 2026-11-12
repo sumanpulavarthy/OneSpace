@@ -37,6 +37,15 @@ public sealed class ZohoMcpOptions
     /// <summary>Per-tool argument that must name the caller (bound to their email), for tools with no self-scope flag.</summary>
     public Dictionary<string, string> SelfEmailArguments { get; set; } = new() { ["getEmployeeShiftDetails"] = "emailId" };
 
+    /// <summary>
+    /// Per-tool argument that must carry the caller's erecno (bound from <c>IZohoEmployeeDirectory</c>). Zoho rejects
+    /// these tools without it; the MCP server does not resolve the caller itself (verified 2026-11-12).
+    /// </summary>
+    public Dictionary<string, string> SelfErecnoArguments { get; set; } = new() { ["getLeaveBalance"] = "employee" };
+
+    /// <summary>Dev/POC fallback: work email → erecno, checked before the directory.</summary>
+    public Dictionary<string, long> EmployeeErecnos { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
     public ZohoOAuthOptions OAuth { get; set; } = new();
 
     public bool IsConfigured => Uri.TryCreate(Endpoint, UriKind.Absolute, out _);

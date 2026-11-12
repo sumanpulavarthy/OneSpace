@@ -51,3 +51,18 @@ public interface IOAuthClientStore
     Task<RegisteredOAuthClient?> GetAsync(string issuer, CancellationToken cancellationToken);
     Task SaveAsync(RegisteredOAuthClient client, CancellationToken cancellationToken);
 }
+
+/// <summary>
+/// FR-2: maps an employee (by work email) to their Zoho People employee record number (erecno). Zoho's MCP tools
+/// such as getLeaveBalance require it and the MCP server does not resolve the caller, so OneSpace binds it itself.
+/// Admin-maintained; never taken from the model or the employee.
+/// </summary>
+public interface IZohoEmployeeDirectory
+{
+    Task<long?> FindErecnoAsync(string email, CancellationToken cancellationToken);
+    Task SetErecnoAsync(string email, long erecno, CancellationToken cancellationToken);
+}
+
+/// <summary>The employee has no erecno mapping, so a tool that needs one cannot be called for them.</summary>
+public sealed class ZohoEmployeeNotMappedException(string email)
+    : InvalidOperationException($"No Zoho People employee record is mapped for '{email}'.");

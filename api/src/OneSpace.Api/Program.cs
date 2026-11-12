@@ -1,6 +1,10 @@
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
+using OneSpace.Api.Assistant;
 using OneSpace.Api.Authentication;
+using OneSpace.Assistant.Telemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using OneSpace.Api.GraphQL;
 using OneSpace.Application;
 using Microsoft.Extensions.Options;
@@ -13,7 +17,7 @@ using OneSpace.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Secrets (Anthropic key, Zoho MCP credential, Graph client secret, DB connection string) come from Key Vault
+// Secrets (LLM provider keys, Zoho MCP credential, Graph client secret, DB connection string) come from Key Vault
 // in Azure. Secret names use "--" for ":" (e.g. Assistant--ApiKey).
 if (Uri.TryCreate(builder.Configuration["KeyVault:Uri"], UriKind.Absolute, out var keyVaultUri))
 {
@@ -23,7 +27,10 @@ if (Uri.TryCreate(builder.Configuration["KeyVault:Uri"], UriKind.Absolute, out v
 // FR-4 logging piggybacks on Application Insights when a connection string is present.
 if (!string.IsNullOrWhiteSpace(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
 {
-    builder.Services.AddOpenTelemetry().UseAzureMonitor();
+    builder.Services.AddOpenTelemetry().UseAzureMonitor()
+        // Assistant spans/metrics plus GenAI semantic-convention LLM telemetry (model, tokens, latency; never contents).
+        .WithTracing(t => t.AddSource(AssistantTelemetry.SourceName, AssistantTelemetry.LlmSourceName))
+        .WithMetrics(m => m.AddMeter(AssistantTelemetry.SourceName, AssistantTelemetry.LlmSourceName));
 }
 
 var allowedOrigins = (builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [])
@@ -38,7 +45,7 @@ builder.Services
     .AddOneSpaceApplication()
     .AddOneSpaceInfrastructure(builder.Configuration, builder.Environment.IsDevelopment())
     .AddOneSpaceConnectors(builder.Configuration)
-    .AddOneSpaceAssistant(builder.Configuration);
+    .AddOneSpaceAssistant(builder.Configuration, builder.Environment.IsDevelopment());
 builder.Services.AddOneSpaceGraphQL();
 builder.Services.AddHealthChecks();
 
@@ -48,6 +55,7 @@ app.UseCors();
 app.UseMiddleware<AuthenticationMiddleware>();
 app.MapHealthChecks("/health");
 app.MapGraphQL("/graphql");
+app.MapAssistantStream();
 
 // Zoho redirects the browser here after consent. Anonymous by necessity: the single-use, user-bound state
 // identifies the employee. The return target is fixed in config, never taken from the request (no open redirect).

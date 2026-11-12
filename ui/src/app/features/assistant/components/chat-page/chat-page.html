@@ -29,9 +29,6 @@
       @for (m of store.messages(); track m.id) {
         <app-message-bubble [message]="m" [connecting]="zoho.busy()" (connectZoho)="connectZoho()" />
       }
-      @if (store.pending()) {
-        <div class="typing" aria-label="OneSpace is looking that up"><span></span><span></span><span></span></div>
-      }
     }
   </div>
 

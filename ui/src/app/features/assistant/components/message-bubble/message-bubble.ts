@@ -1,18 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import type { SourceSystem } from '../../../../graphql/generated';
-import type { ChatMessage } from '../../data-access/assistant.store';
+import { type ChatMessage, SYSTEM_LABELS } from '../../data-access/assistant.store';
+import { AnswerBlock } from '../answer-block/answer-block';
 
-const SYSTEM_LABELS: Record<SourceSystem, string> = {
-  ZOHO_PEOPLE: 'Zoho People',
-  COMPLY_KARO: 'ComplyKaro',
-  MICROSOFT365: 'Microsoft 365',
-  ONE_SPACE: 'OneSpace',
-};
-
-/** One chat message. Assistant answers show where the information came from (FR-1 attribution). */
+/**
+ * One chat message. Assistant answers show a short narrative, then tables/cards built from the source data
+ * (FR-6), and where the information came from (FR-1 attribution).
+ */
 @Component({
   selector: 'app-message-bubble',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [AnswerBlock],
   templateUrl: './message-bubble.html',
   styleUrl: './message-bubble.scss',
 })
@@ -22,21 +20,36 @@ export class MessageBubble {
   readonly connecting = input(false);
   readonly connectZoho = output<void>();
 
-  protected readonly sources = computed(() => {
+  private readonly answer = computed(() => {
     const m = this.message();
-    return m.role === 'assistant' ? m.answer.sources : [];
+    return m.role === 'assistant' ? m.answer : null;
   });
 
-  protected readonly blockedCount = computed(() => {
-    const m = this.message();
-    return m.role === 'assistant' ? m.answer.toolCalls.filter(t => t.outcome === 'BLOCKED').length : 0;
+  protected readonly sources = computed(() => this.answer()?.sources ?? []);
+  protected readonly blocks = computed(() => this.answer()?.blocks ?? []);
+
+  /** The grounding check found figures in the narrative that are not in the source data. */
+  protected readonly ungrounded = computed(() => {
+    const grounding = this.answer()?.grounding;
+    return !!grounding && grounding.checked && !grounding.grounded;
   });
+
+  protected readonly draft = computed(() => {
+    const m = this.message();
+    return m.role === 'pending' ? m.draft : '';
+  });
+
+  protected readonly activity = computed(() => {
+    const m = this.message();
+    return m.role === 'pending' ? m.activity : null;
+  });
+
+  protected readonly blockedCount = computed(() => this.answer()?.toolCalls.filter(t => t.outcome === 'BLOCKED').length ?? 0);
 
   /** The answer needed Zoho People data the employee hasn't granted access to yet. */
-  protected readonly needsZoho = computed(() => {
-    const m = this.message();
-    return m.role === 'assistant' && m.answer.toolCalls.some(t => t.outcome === 'CONNECTION_REQUIRED' && t.system === 'ZOHO_PEOPLE');
-  });
+  protected readonly needsZoho = computed(
+    () => this.answer()?.toolCalls.some(t => t.outcome === 'CONNECTION_REQUIRED' && t.system === 'ZOHO_PEOPLE') ?? false,
+  );
 
   protected systemLabel(system: SourceSystem): string {
     return SYSTEM_LABELS[system];

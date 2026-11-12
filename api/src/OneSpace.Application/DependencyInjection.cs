@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OneSpace.Application.Abstractions;
 using OneSpace.Application.Assistant;
 using OneSpace.Application.Policies;
 
@@ -10,6 +11,8 @@ public static class DependencyInjection
     {
         services.AddScoped<AskAssistantUseCase>();
         services.AddScoped<SyncPoliciesUseCase>();
+        services.AddScoped<PolicyEmbeddingIndexer>();
+        services.AddScoped<IPolicySearch, HybridPolicySearch>();
         return services;
     }
 }

@@ -31,6 +31,24 @@ type Mutation {
   disconnectZoho: Boolean! @cost(weight: "10")
 }
 
+type AnswerBlock {
+  id: String!
+  kind: AnswerBlockKind!
+  title: String
+  columns: [AnswerColumn!]!
+  rows: [[String!]!]!
+  items: [KeyValueItem!]!
+  totalRows: Int!
+  source: SourceAttribution
+  text: String
+}
+
+type AnswerColumn {
+  key: String!
+  label: String!
+  format: FieldFormat!
+}
+
 type AssistantAnswer {
   sessionId: String!
   answer: String!
@@ -38,6 +56,8 @@ type AssistantAnswer {
   sources: [SourceAttribution!]!
   toolCalls: [ToolInvocation!]!
   latencyMs: Long!
+  blocks: [AnswerBlock!]!
+  grounding: GroundingReport!
 }
 
 type CalendarEntry {
@@ -76,6 +96,18 @@ type EmployeeProfile {
   jobTitle: String
   department: String
   officeLocation: String
+}
+
+type GroundingReport {
+  checked: Boolean!
+  grounded: Boolean!
+  unverifiedValues: [String!]!
+}
+
+type KeyValueItem {
+  label: String!
+  value: String!
+  format: FieldFormat!
 }
 
 type MailMessageSummary {
@@ -127,6 +159,14 @@ type QueryLogEntry {
   responseSummary: String!
   failed: Boolean!
   latencyMs: Long!
+  provider: String
+  model: String
+  escalated: Boolean!
+  failedOver: Boolean!
+  grounded: Boolean
+  unverifiedValues: [String!]!
+  inputTokens: Long
+  outputTokens: Long
   createdAt: DateTime!
 }
 
@@ -166,6 +206,22 @@ type ZohoConnectionStatus {
 input AskInput {
   question: String!
   sessionId: String
+}
+
+enum AnswerBlockKind {
+  TEXT
+  TABLE
+  KEY_VALUE
+}
+
+enum FieldFormat {
+  TEXT
+  NUMBER
+  DATE
+  DATE_TIME
+  BOOLEAN
+  LINK
+  BYTES
 }
 
 enum SourceSystem {

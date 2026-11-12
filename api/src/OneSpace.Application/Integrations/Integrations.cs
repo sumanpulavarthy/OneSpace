@@ -18,7 +18,8 @@ public interface IZohoPeopleClient
 
 public sealed record McpToolDescriptor(string Name, string? Description, JsonObject InputSchema);
 
-public sealed record McpToolResult(string Text, bool IsError);
+/// <param name="Structured">The MCP <c>structuredContent</c> (spec 2025-06-18) when the server sends it; preferred over parsing <paramref name="Text"/>.</param>
+public sealed record McpToolResult(string Text, bool IsError, JsonNode? Structured = null);
 
 /// <summary>
 /// Microsoft Graph, called on-behalf-of the signed-in employee (FR-2). Read-only, and every call is

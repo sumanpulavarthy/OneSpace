@@ -19,6 +19,7 @@ public sealed class ZohoMcpClient(
     IToolAllowlistGuard guard,
     IUserContextAccessor userContext,
     IZohoAccessTokenProvider tokens,
+    IZohoEmployeeDirectory employees,
     ZohoToolListCache toolCache,
     IOptions<ZohoMcpOptions> options) : IZohoPeopleClient
 {
@@ -58,7 +59,10 @@ public sealed class ZohoMcpClient(
 
     public async Task<McpToolResult> CallToolAsync(string toolName, JsonObject? arguments, CancellationToken cancellationToken)
     {
-        var decision = guard.Authorize(toolName, BindToCurrentUser(toolName, arguments));
+        var bound = BindToCurrentUser(toolName, arguments);
+        if (_options.SelfErecnoArguments.TryGetValue(toolName, out var erecnoArgument))
+            bound[erecnoArgument] = await ResolveErecnoAsync(cancellationToken);
+        var decision = guard.Authorize(toolName, bound);
         if (!decision.Allowed) throw new ToolBlockedException(toolName, decision.Reason ?? "denied");
         if (!_options.IsConfigured) throw new InvalidOperationException("Zoho MCP integration is not configured.");
 
@@ -81,7 +85,33 @@ public sealed class ZohoMcpClient(
         var text = result["content"] is JsonArray content
             ? string.Join('\n', content.Where(c => c?["type"]?.GetValue<string>() == "text").Select(c => c!["text"]?.GetValue<string>()))
             : result.ToJsonString();
-        return new McpToolResult(text, isError);
+        var structured = result["structuredContent"]?.DeepClone();
+
+        // Zoho wraps every reply as {"status":"success","data":{"response":{"result":...}},"headers":{...}}, even
+        // when the call failed (result.status = "failure"). Unwrap to the payload and surface in-band failures.
+        if (!isError && ZohoEnvelope.TryUnwrap(structured ?? TryParseJson(text), out var payload, out var failure))
+        {
+            if (failure is not null) return new McpToolResult(failure, true, null);
+            return new McpToolResult(payload!.ToJsonString(), false, payload);
+        }
+        return new McpToolResult(text, isError, structured);
+    }
+
+    private static JsonNode? TryParseJson(string text)
+    {
+        var trimmed = text.TrimStart();
+        if (trimmed.Length == 0 || trimmed[0] != '{') return null;
+        try { return JsonNode.Parse(text); }
+        catch (JsonException) { return null; }
+    }
+
+    /// <summary>FR-2: the caller's own erecno, from config (dev) or the admin-maintained directory. Never from the model.</summary>
+    private async Task<long> ResolveErecnoAsync(CancellationToken cancellationToken)
+    {
+        var user = userContext.Current;
+        var email = user.Email ?? user.UserPrincipalName;
+        if (_options.EmployeeErecnos.TryGetValue(email, out var configured)) return configured;
+        return await employees.FindErecnoAsync(email, cancellationToken) ?? throw new ZohoEmployeeNotMappedException(email);
     }
 
     /// <summary>The server's <c>initialize</c> instructions (per user: Zoho includes the current employee's details).</summary>

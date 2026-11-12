@@ -23,6 +23,9 @@ public sealed class MongoOptions
 
     /// <summary>FR-4 logs are for debugging only; expire them so they don't become an accidental archive.</summary>
     public int QueryLogRetentionDays { get; set; } = 30;
+
+    /// <summary>Conversation memory exists only for follow-up questions; it expires this long after the last turn.</summary>
+    public int ConversationRetentionHours { get; set; } = 24;
 }
 
 /// <summary>The two Phase 0 collections (PRD Section 14). No live HR data is stored here.</summary>
@@ -31,8 +34,11 @@ public sealed class MongoContext
     public const string QueryLogsCollection = "queryLogs";
     public const string PolicyDocumentsCollection = "policyDocuments";
     public const string ZohoConnectionsCollection = "zohoConnections";
+    public const string ZohoEmployeesCollection = "zohoEmployees";
     public const string OAuthStatesCollection = "oauthStates";
     public const string OAuthClientsCollection = "oauthClients";
+    public const string ConversationsCollection = "conversations";
+    public const string PolicyChunksCollection = "policyChunks";
 
     static MongoContext() => ConfigureSerialization();
 
@@ -55,6 +61,8 @@ public sealed class MongoContext
     public IMongoCollection<QueryLogEntry> QueryLogs => Database.GetCollection<QueryLogEntry>(QueryLogsCollection);
 
     public IMongoCollection<PolicyDocument> PolicyDocuments => Database.GetCollection<PolicyDocument>(PolicyDocumentsCollection);
+
+    public IMongoCollection<PolicyChunk> PolicyChunks => Database.GetCollection<PolicyChunk>(PolicyChunksCollection);
 
     private static void ConfigureSerialization()
     {

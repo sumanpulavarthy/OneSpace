@@ -4,6 +4,7 @@ using OneSpace.Application.Abstractions;
 using OneSpace.Application.Integrations;
 using OneSpace.Assistant.Engines;
 using OneSpace.Assistant.Guard;
+using OneSpace.Assistant.Presentation;
 using OneSpace.Assistant.Tools;
 using OneSpace.Domain.Assistant;
 using OneSpace.Domain.Policies;
@@ -90,10 +91,11 @@ public class AssistantToolboxTests
             new("zoho_getLeaveBalance", Domain.SourceSystem.ZohoPeople, ToolInvocationOutcome.Succeeded, 1),
             new(AssistantToolbox.SearchPolicies, Domain.SourceSystem.ComplyKaro, ToolInvocationOutcome.Succeeded, 1)
         };
-        Assert.Equal("leave_lookup+policy_lookup", ClaudeAssistantEngine.IntentFor(calls));
+        Assert.Equal("leave_lookup+policy_lookup", IntentClassifier.For(calls));
     }
 
-    private AssistantToolbox Toolbox() => new(_zoho, new NoM365(), new NoPolicies(), ToolAllowlistGuard.FromEmbeddedSpec(), NullLogger<AssistantToolbox>.Instance);
+    private AssistantToolbox Toolbox() => new(_zoho, new NoM365(), new NoPolicies(), ToolAllowlistGuard.FromEmbeddedSpec(),
+        new ToolResultPresenter(PresentationSpec.LoadEmbedded()), NullLogger<AssistantToolbox>.Instance);
 
     private sealed class FakeZoho : IZohoPeopleClient
     {
@@ -127,12 +129,13 @@ public class AssistantToolboxTests
         public Task<IReadOnlyList<TodoTaskSummary>> GetMyTasksAsync(int top, CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<TodoTaskSummary>>([]);
     }
 
-    private sealed class NoPolicies : IPolicyDocumentRepository
+    private sealed class NoPolicies : IPolicyDocumentRepository, IPolicySearch
     {
         public Task UpsertManyAsync(IReadOnlyCollection<PolicyDocument> documents, CancellationToken cancellationToken) => Task.CompletedTask;
         public Task<long> DeleteMissingAsync(IReadOnlyCollection<string> keepIds, CancellationToken cancellationToken) => Task.FromResult(0L);
         public Task<IReadOnlyList<PolicySearchResult>> SearchAsync(string text, int limit, CancellationToken cancellationToken) =>
             Task.FromResult<IReadOnlyList<PolicySearchResult>>([]);
         public Task<PolicyDocument?> GetAsync(string id, CancellationToken cancellationToken) => Task.FromResult<PolicyDocument?>(null);
+        public Task<IReadOnlyList<PolicyDocument>> GetAllAsync(CancellationToken cancellationToken) => Task.FromResult<IReadOnlyList<PolicyDocument>>([]);
     }
 }

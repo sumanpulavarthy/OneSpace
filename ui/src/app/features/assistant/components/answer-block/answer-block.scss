@@ -1,0 +1,110 @@
+:host {
+  display: block;
+  margin-top: 12px;
+}
+
+.block {
+  margin: 0;
+}
+
+.scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+caption {
+  text-align: left;
+  font-weight: 600;
+  padding: 10px 12px 6px;
+}
+
+th,
+td {
+  padding: 6px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-top: 1px solid var(--border);
+}
+
+th {
+  font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--chip);
+}
+
+figcaption,
+.source {
+  margin: 6px 0 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+figcaption .source {
+  margin-left: 4px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 0.875rem;
+  }
+}
+
+dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px 16px;
+  margin: 0;
+}
+
+.pair {
+  min-width: 0;
+}
+
+dt {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+dd {
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+a {
+  color: var(--accent);
+}

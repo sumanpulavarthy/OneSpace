@@ -139,7 +139,8 @@ resource api 'Microsoft.Web/sites@2023-12-01' = {
         // Zoho OAuth: callback on the API, then back to the UI. Both fixed here (no open redirect).
         { name: 'Integrations__ZohoMcp__OAuth__RedirectUri', value: 'https://${prefix}-api.azurewebsites.net/oauth/zoho/callback' }
         { name: 'Integrations__ZohoMcp__OAuth__PostConnectRedirectUri', value: 'https://${ui.properties.defaultHostname}/assistant' }
-        // Remaining secrets (Assistant--ApiKey, Integrations--ZohoMcp--Endpoint,
+        // Remaining secrets (Assistant--ApiKey or Assistant--Providers--{name}--ApiKey per LLM provider, Retrieval--Embeddings--ApiKey,
+        // Integrations--ZohoMcp--Endpoint,
         // Integrations--Microsoft365--ClientSecret) are added to Key Vault out of band.
       ]
     }

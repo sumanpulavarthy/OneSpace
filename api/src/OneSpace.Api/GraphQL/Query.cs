@@ -62,10 +62,10 @@ public sealed class Query
     public async Task<string> LeaveBalance(IZohoPeopleClient zoho, CancellationToken cancellationToken) =>
         (await zoho.CallToolAsync("getLeaveBalance", null, cancellationToken)).Text;
 
-    /// <summary>Search the synced ComplyKaro policy cache.</summary>
+    /// <summary>Search the synced ComplyKaro policy cache (hybrid keyword + vector when embeddings are configured, FR-3).</summary>
     public Task<IReadOnlyList<PolicySearchResult>> SearchPolicies(
         string query,
-        IPolicyDocumentRepository policies,
+        IPolicySearch policies,
         CancellationToken cancellationToken,
         int limit = 5) =>
         policies.SearchAsync(query, limit, cancellationToken);
