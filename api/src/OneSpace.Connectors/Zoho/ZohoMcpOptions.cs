@@ -18,6 +18,20 @@ public sealed class ZohoMcpOptions
     /// </summary>
     public string ToolNamePrefix { get; set; } = "ZohoPeople_";
 
+    /// <summary>
+    /// Zoho People REST base (e.g. <c>https://people.zoho.in</c>), used only to look up the caller's own erecno with
+    /// their MCP token. Defaults to the data centre of <see cref="Endpoint"/> (<c>*.zohomcp.in</c> → <c>people.zoho.in</c>).
+    /// </summary>
+    public string? PeopleApiBaseUrl { get; set; }
+
+    internal string? ResolvePeopleApiBaseUrl()
+    {
+        if (!string.IsNullOrWhiteSpace(PeopleApiBaseUrl)) return PeopleApiBaseUrl.TrimEnd('/');
+        if (!Uri.TryCreate(Endpoint, UriKind.Absolute, out var endpoint)) return null;
+        var marker = endpoint.Host.IndexOf(".zohomcp.", StringComparison.OrdinalIgnoreCase);
+        return marker < 0 ? null : $"https://people.zoho.{endpoint.Host[(marker + ".zohomcp.".Length)..]}";
+    }
+
     public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(20);
 
     public TimeSpan ToolListCacheDuration { get; set; } = TimeSpan.FromMinutes(10);

@@ -128,7 +128,36 @@
         "Importance": { "order": 5 }
       }
     },
-    "zoho_getLeaveBalance": { "title": "Leave balance" },
+    "zoho_getLeaveBalance": {
+      "title": "Leave balance",
+      "$comment": "Live shape (2026-11-13): {data:[{erecno, name, leavetypes:[{name, available, used, planned, taken, ...}]}]}.",
+      "path": "data.0.leavetypes",
+      "fields": {
+        "name": { "label": "Leave type", "order": 1 },
+        "leavetype": { "label": "Leave type", "order": 1 },
+        "available": { "label": "Available", "format": "Number", "order": 2 },
+        "taken": { "label": "Taken", "format": "Number", "order": 3 },
+        "planned": { "label": "Planned", "format": "Number", "order": 4 },
+        "used": { "hidden": true },
+        "leavetypeUnit": { "label": "Unit", "order": 5 },
+        "code": { "hidden": true },
+        "typeConstant": { "hidden": true },
+        "color": { "hidden": true },
+        "icon": { "hidden": true },
+        "validFrom": { "hidden": true },
+        "type": { "hidden": true },
+        "sequenceId": { "hidden": true },
+        "displayBalance": { "hidden": true },
+        "isdayleave": { "hidden": true },
+        "unit": { "hidden": true },
+        "dbcolor": { "hidden": true },
+        "doNotDisplayBalance": { "hidden": true },
+        "isV2": { "hidden": true },
+        "leavetypeid": { "hidden": true },
+        "isOneTime": { "hidden": true },
+        "showFullSummary": { "hidden": true }
+      }
+    },
     "zoho_fetchLeaveTypes": { "title": "Leave types", "dataClass": "Internal" },
     "zoho_listholidays": { "title": "Holidays", "dataClass": "Internal" },
     "zoho_getLeaveRecords": { "title": "Your leave records" },

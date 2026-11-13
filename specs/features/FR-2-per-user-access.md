@@ -47,6 +47,7 @@ Tests: `UnitTests/Connectors/ZohoOAuthServiceTests` (full flow against a fake au
 - Dates use `dd-MMM-yyyy`. `listholidays` needs `from`/`to`, and `getLeaveRecords` needs `from_date`/`to_date`.
 - **Blocker (Zoho admin):** calls currently return `MCP_DISABLED: MCP is disabled for your organization… enable Zia in Zoho People Settings`. A Zoho People admin must enable Zia/MCP.
 - **Verified 2026-11-12:** Zoho rejects `getLeaveBalance` without `employee` (erecno) and resolves `CURRENTUSER` to empty for OAuth clients; no allowlisted tool returns the caller's erecno. OneSpace therefore binds the caller's own erecno from an admin-maintained directory (`zohoEmployees` collection, keyed by work email; `ZohoMcp:EmployeeErecnos` config as dev fallback) via `ZohoMcp:SelfErecnoArguments`. A model-supplied value is always overwritten; unmapped employees get a "not linked yet" answer.
+- **Auto-resolved 2026-11-13:** when no mapping exists, OneSpace finds the erecno through the employee's own Zoho connection: `GET people.zoho.<dc>/people/api/attendance/getUserReport` (today only) with their MCP token, taking `employeeDetails.erecno` only from the entry whose `mail id` matches their verified Entra email (an admin token lists everyone, so there is no fallback to another entry). The result is cached in `zohoEmployees`. Dev: set `Authentication:DevelopmentUserEmail` to a real Zoho employee email.
 
 ## Open
 - **Open Item 2:** ComplyKaro and PazCare OAuth capability.

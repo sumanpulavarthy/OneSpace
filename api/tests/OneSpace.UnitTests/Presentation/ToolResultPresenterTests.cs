@@ -42,8 +42,23 @@ public class ToolResultPresenterTests
 
         var block = Assert.Single(_presenter.Present("zoho_getLeaveBalance", "t1", data, "", Zoho).Blocks);
 
-        Assert.Equal(["Name", "Available", "Booked"], block.Columns.Select(c => c.Label));
+        Assert.Equal(["Leave type", "Available", "Booked"], block.Columns.Select(c => c.Label));
         Assert.Equal(["Casual Leave", "4.5", "2"], block.Rows[0]);
+    }
+
+    [Fact]
+    public void Live_leave_balance_shape_shows_leave_types_via_the_spec_path()
+    {
+        var data = JsonNode.Parse("""
+            {"data":[{"emp_disabled":false,"erecno":"382901000000315003","name":"Me","leavetypes":[
+              {"leavetype_id":"1","code":"CL","name":"Casual Leave","available":12,"taken":0,"planned":1,"used":0,"color":2,"leavetypeUnit":"Day","isV2":true},
+              {"leavetype_id":"2","code":"EL","name":"Earned Leave","available":10.5,"taken":1.5,"planned":0,"used":1.5,"color":10,"leavetypeUnit":"Day","isV2":true}]}]}
+            """);
+
+        var block = Assert.Single(_presenter.Present("zoho_getLeaveBalance", "t1", data, "", Zoho).Blocks);
+
+        Assert.Equal(["Leave type", "Available", "Taken", "Planned", "Unit"], block.Columns.Select(c => c.Label));
+        Assert.Equal(["Earned Leave", "10.5", "1.5", "0", "Day"], block.Rows[1]);
     }
 
     [Fact]

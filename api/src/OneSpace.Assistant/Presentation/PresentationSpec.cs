@@ -94,6 +94,9 @@ public sealed class PresentationDefaults
 public sealed class ToolPresentation
 {
     public string? Title { get; init; }
+
+    /// <summary>Dot path to the part of the output to show, e.g. <c>data.0.leavetypes</c>. Ignored when it does not resolve.</summary>
+    public string? Path { get; init; }
     public DataClass? DataClass { get; init; }
     public Dictionary<string, FieldSpec>? Fields { get; init; }
 }

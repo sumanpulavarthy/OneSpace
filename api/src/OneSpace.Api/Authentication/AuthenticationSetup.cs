@@ -7,6 +7,7 @@ namespace OneSpace.Api.Authentication;
 public static class AuthenticationSetup
 {
     public const string DevelopmentUserSetting = "Authentication:AllowDevelopmentUser";
+    public const string DevelopmentUserEmailSetting = "Authentication:DevelopmentUserEmail";
 
     /// <summary>
     /// Validates Entra ID bearer tokens (signature, issuer, audience, expiry). Fails at startup outside
@@ -67,7 +68,7 @@ public sealed partial class AuthenticationMiddleware(
         if (environment.IsDevelopment() && configuration.GetValue<bool>(AuthenticationSetup.DevelopmentUserSetting)
             && !context.Request.Headers.ContainsKey("Authorization"))
         {
-            context.User = DevelopmentUser();
+            context.User = DevelopmentUser(configuration[AuthenticationSetup.DevelopmentUserEmailSetting]);
             await next(context);
             return;
         }
@@ -81,11 +82,14 @@ public sealed partial class AuthenticationMiddleware(
         environment.IsDevelopment() && HttpMethods.IsGet(context.Request.Method) && context.Request.Path.StartsWithSegments("/graphql")
         && context.Request.Headers.Accept.ToString().Contains("text/html", StringComparison.OrdinalIgnoreCase);
 
-    private static ClaimsPrincipal DevelopmentUser() => new(new ClaimsIdentity(
+    /// <param name="email">Optional (<c>Authentication:DevelopmentUserEmail</c>): set it to a real Zoho People employee's email so
+    /// OneSpace can find their erecno in Zoho, as it does for real users.</param>
+    private static ClaimsPrincipal DevelopmentUser(string? email) => new(new ClaimsIdentity(
     [
         new Claim("oid", "00000000-0000-0000-0000-00000000dev1"),
         new Claim("preferred_username", "dev.user@onespace.local"),
         new Claim("name", "Local Developer"),
+        new Claim("email", string.IsNullOrWhiteSpace(email) ? "dev.user@onespace.local" : email),
     ], authenticationType: "Development"));
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Rejected unauthenticated request to {Path}: {Reason}")]

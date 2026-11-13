@@ -24,9 +24,27 @@ public sealed class ToolResultPresenter(PresentationSpec spec)
         data ??= TryParse(rawText);
         var sections = data is null
             ? [Section.ForText(title, rawText, isRaw: true)]
-            : Build(toolName, toolClass, Unwrap(data), title, 0);
+            : Build(toolName, toolClass, Unwrap(Select(data, spec.ForTool(toolName)?.Path)), title, 0);
 
         return new PresentedResult(toolName, resultId, sections, source, toolClass, spec.Defaults);
+    }
+
+    /// <summary>Follows a dot path (object keys, array indexes); returns the original node when any step is missing.</summary>
+    internal static JsonNode Select(JsonNode node, string? path)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return node;
+        JsonNode? current = node;
+        foreach (var step in path.Split('.'))
+        {
+            current = current switch
+            {
+                JsonObject obj => obj[step],
+                JsonArray arr when int.TryParse(step, out var i) && i >= 0 && i < arr.Count => arr[i],
+                _ => null
+            };
+            if (current is null) return node;
+        }
+        return current;
     }
 
     /// <summary>Descends through wrappers like <c>{"response":{"result":[...],"status":0}}</c> to the payload.</summary>

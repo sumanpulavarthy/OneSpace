@@ -105,13 +105,45 @@ public sealed class ZohoMcpClient(
         catch (JsonException) { return null; }
     }
 
-    /// <summary>FR-2: the caller's own erecno, from config (dev) or the admin-maintained directory. Never from the model.</summary>
+    /// <summary>
+    /// FR-2: the caller's own erecno. Order: config (dev override) → directory cache → Zoho itself, looked up with the
+    /// caller's own Zoho token and matched to their verified email, then cached. Never from the model.
+    /// </summary>
     private async Task<long> ResolveErecnoAsync(CancellationToken cancellationToken)
     {
         var user = userContext.Current;
         var email = user.Email ?? user.UserPrincipalName;
         if (_options.EmployeeErecnos.TryGetValue(email, out var configured)) return configured;
-        return await employees.FindErecnoAsync(email, cancellationToken) ?? throw new ZohoEmployeeNotMappedException(email);
+        if (await employees.FindErecnoAsync(email, cancellationToken) is { } cached) return cached;
+
+        var erecno = await LookUpErecnoInZohoAsync(email, cancellationToken) ?? throw new ZohoEmployeeNotMappedException(email);
+        await employees.SetErecnoAsync(email, erecno, cancellationToken);
+        return erecno;
+    }
+
+    private async Task<long?> LookUpErecnoInZohoAsync(string email, CancellationToken cancellationToken)
+    {
+        var baseUrl = _options.ResolvePeopleApiBaseUrl();
+        if (baseUrl is null) return null;
+
+        var userId = userContext.Current.ObjectId;
+        _accessToken ??= await tokens.GetAccessTokenAsync(userId, forceRefresh: false, cancellationToken);
+        var url = baseUrl + ZohoSelfLookup.ReportPath(DateOnly.FromDateTime(DateTime.UtcNow));
+
+        for (var attempt = 0; ; attempt++)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Zoho-oauthtoken", _accessToken);
+            using var response = await http.SendAsync(request, cancellationToken);
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                if (attempt > 0) throw new ZohoConnectionRequiredException("Zoho rejected the token");
+                _accessToken = await tokens.GetAccessTokenAsync(userId, forceRefresh: true, cancellationToken);
+                continue;
+            }
+            if (!response.IsSuccessStatusCode) return null;
+            return ZohoSelfLookup.FindErecno(TryParseJson(await response.Content.ReadAsStringAsync(cancellationToken)), email);
+        }
     }
 
     /// <summary>The server's <c>initialize</c> instructions (per user: Zoho includes the current employee's details).</summary>
