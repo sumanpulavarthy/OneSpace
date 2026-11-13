@@ -25,6 +25,21 @@
   margin: auto 0;
   text-align: center;
 
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    margin: 0 0 12px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #2e9d5b;
+  }
+
   h1 {
     font-size: clamp(1.4rem, 3vw, 2rem);
     margin: 0 0 8px;

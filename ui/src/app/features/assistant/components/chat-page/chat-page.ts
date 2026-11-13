@@ -4,6 +4,7 @@ import {
   ElementRef,
   OnInit,
   afterRenderEffect,
+  computed,
   inject,
   input,
   signal,
@@ -34,6 +35,12 @@ export class ChatPage implements OnInit {
   readonly zohoResult = input<string | undefined>(undefined, { alias: 'zoho' });
   protected readonly banner = signal<ConnectOutcome>(null);
   protected readonly connectError = signal<string | null>(null);
+
+  /**
+   * Names only systems with a real, confirmed connection. Today that is just Zoho People (per-user consent).
+   * ComplyKaro runs on sample data and Microsoft 365 has no status query yet, so neither is claimed.
+   */
+  protected readonly connectedLine = computed(() => (this.zoho.connected() ? 'Connected to Zoho People.' : null));
 
   protected readonly suggestions = [
     "What's my leave balance?",

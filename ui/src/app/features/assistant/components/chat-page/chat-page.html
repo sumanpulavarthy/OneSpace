@@ -17,8 +17,11 @@
   <div class="log" #log aria-live="polite">
     @if (store.isEmpty()) {
       <div class="welcome">
-        <h1>Hi{{ store.userName() ? ', ' + store.userName() : '' }}. What do you need?</h1>
-        <p>One question instead of six apps. Answers come from Zoho People, ComplyKaro and Microsoft 365.</p>
+        @if (connectedLine(); as line) {
+          <p class="status" role="status"><span class="dot" aria-hidden="true"></span>{{ line }}</p>
+        }
+        <h1>Hi{{ store.userName() ? ', ' + store.userName() : '' }}, how can I help?</h1>
+        <p>Your HR, compliance and work tools, all in one place.</p>
         <ul class="suggestions">
           @for (s of suggestions; track s) {
             <li><button type="button" class="chip" (click)="useSuggestion(s)">{{ s }}</button></li>
