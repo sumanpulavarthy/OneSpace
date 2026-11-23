@@ -1,4 +1,4 @@
-// OneSpace Phase 0 infrastructure: one App Service (API), a Static Web App (UI), Key Vault,
+ // OneSpace Phase 0 infrastructure: one App Service (API), a Static Web App (UI), Key Vault,
 // Application Insights and Azure Cosmos DB for MongoDB (vCore). Secrets live only in Key Vault.
 targetScope = 'resourceGroup'
 
