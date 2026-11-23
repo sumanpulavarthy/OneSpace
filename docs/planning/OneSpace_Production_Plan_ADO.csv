@@ -1,0 +1,739 @@
+﻿ID,Work Item Type,Title 1,Title 2,Title 3,Title 4,State,Priority,Value Area,Story Points,Original Estimate,Remaining Work,Activity,Iteration Path,Start Date,Target Date,Tags,Description,Acceptance Criteria
+,Epic,EP01 Platform Foundation & DevOps,,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Repository, environments, IaC, CI/CD and observability for a production-grade OneSpace (Angular 20 + .NET 10 HotChocolate GraphQL + Cosmos DB for MongoDB vCore on Azure).</p>",
+,Feature,,Environments & Infrastructure as Code,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01,<p>Dev / Test / Prod environments provisioned from Bicep.</p>,
+,User Story,,,"Provision Dev, Test and Prod environments via Bicep",,New,1,Architectural,8,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,<p>As a platform engineer I want all environments created from code so that they are reproducible.</p>,"<ul><li>Bicep compiles with no warnings</li><li>App Service, Static Web App, Cosmos vCore, Key Vault, App Insights, Storage, Web PubSub deployed per env</li><li>Resource naming and tagging standard applied</li><li>What-if output reviewed before prod deploy</li></ul>"
+,Task,,,,[OPS] Compile and lint existing Bicep templates; fix errors,New,1,,,4,4,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,"[OPS] Add Storage Account module (blob containers: idea-attachments, feed-media, ai-documents)",New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Add Azure Web PubSub module for real-time chat/notifications,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Parameterise per environment (dev/test/prod .bicepparam),New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Deploy Dev environment and verify resources,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Deploy Test environment,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Deploy Prod environment (gated),New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[DOC] Document environment topology and naming conventions,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1,,
+,User Story,,,Configure secrets and managed identity,,New,1,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,<p>As a security owner I want all secrets in Key Vault accessed via managed identity so that no secret lives in config.</p>,<ul><li>App Service uses system-assigned MI</li><li>Key Vault references resolve in all envs</li><li>No secrets in appsettings or pipeline variables</li><li>Secret rotation procedure documented</li></ul>
+,Task,,,,[OPS] Enable managed identity and Key Vault RBAC role assignments,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,"[OPS] Load secrets (DB, Claude API key, Zoho MCP, Graph client secret) per env",New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[BE] Verify Key Vault references in App Service configuration,New,1,,,1,1,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,Task,,,,[DOC] Write secret rotation runbook,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1,,
+,User Story,,,Networking and edge security,,New,2,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,<p>As a security owner I want the API protected behind private networking and WAF so that the attack surface is minimal.</p>,"<ul><li>Cosmos and Key Vault reachable only via private endpoints in prod</li><li>Front Door / WAF in front of SWA and API</li><li>Custom domain + managed TLS certificate</li><li>HTTPS only, TLS 1.2+</li></ul>"
+,Task,,,,"[OPS] Create VNet, subnets and private endpoints for Cosmos and Key Vault",New,2,,,4,4,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Configure App Service VNet integration,New,2,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Configure Azure Front Door with WAF policy (OWASP rule set),New,2,,,4,4,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Bind custom domain and managed certificate,New,2,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[QA] Verify public access is blocked for data-plane resources,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Feature,,CI/CD Pipelines,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01,"<p>Azure Pipelines for build, test, spec-drift checks and multi-stage deployment.</p>",
+,User Story,,,CI pipeline for API and UI,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,<p>As a developer I want every PR built and tested so that main is always releasable.</p>,"<ul><li>PR validation runs build, unit, contract and UI tests</li><li>Spec-drift check fails the build on GraphQL schema mismatch</li><li>Code coverage published; gate at 70% for new code</li><li>Branch policy: 1 reviewer + green build</li></ul>"
+,Task,,,,[OPS] Extend .azuredevops CI YAML with UI lint/test/build stage,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Add contract + spec-drift stage (schema export diff),New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Publish test results and coverage (Cobertura),New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Configure branch policies on main,New,1,,,1,1,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,"[OPS] Add dependency vulnerability scan (dotnet list package --vulnerable, npm audit)",New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,User Story,,,CD pipeline with environment approvals,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,<p>As a release manager I want multi-stage deployments with approvals so that prod changes are controlled.</p>,<ul><li>Dev auto-deploys on merge</li><li>Test deploys after Dev smoke passes</li><li>Prod requires manual approval</li><li>Rollback via slot swap documented and tested</li></ul>
+,Task,,,,[OPS] Create deploy stages Dev -> Test -> Prod with environments and approvals,New,1,,,4,4,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Configure App Service staging slot + swap with warm-up,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Deploy SWA from pipeline with environment-specific app-config.json,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[OPS] Post-deploy smoke test step (health endpoint + GraphQL ping),New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[QA] Execute rollback drill on Test,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Feature,,Observability & Operations,,,New,2,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01,"<p>Logging, metrics, tracing, alerting and health checks.</p>",
+,User Story,,,Structured logging and distributed tracing,,New,2,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,<p>As an operator I want correlated logs and traces across UI and API so that issues can be diagnosed quickly.</p>,<ul><li>OpenTelemetry export to App Insights from API</li><li>App Insights JS SDK in Angular with correlation</li><li>PII scrubbed from logs</li><li>Correlation ID returned in error responses</li></ul>
+,Task,,,,[BE] Configure OpenTelemetry tracing/metrics for API and HotChocolate,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,Task,,,,[FE] Add App Insights web SDK with route tracking,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[BE] Implement PII redaction enricher,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,Task,,,,"[BE] Health checks endpoint (Cosmos, Key Vault, Web PubSub, Zoho, Graph)",New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,User Story,,,Dashboards and alerts,,New,2,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 4; MoSCoW-Must,"<p>As an operator I want alerts on errors, latency and availability so that incidents are caught before users report them.</p>","<ul><li>Availability test on public URL</li><li>Alerts: 5xx rate, p95 latency &gt; 2s, failed dependencies, Cosmos RU throttling</li><li>Action group routes to on-call email/Teams</li><li>Operations workbook published</li></ul>"
+,Task,,,,[OPS] Create availability tests and alert rules,New,2,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Task,,,,"[OPS] Build App Insights workbook (requests, failures, AI usage, module usage)",New,2,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Task,,,,[OPS] Configure action group (email + Teams webhook),New,2,,,1,1,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Feature,,Architecture & Engineering Standards,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01,<p>Decisions and conventions that let the team move fast in a 4-week window.</p>,
+,User Story,,,Production architecture & ADRs for new modules,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,<p>As a tech lead I want the target architecture agreed so that all modules follow one pattern.</p>,<ul><li>Module boundaries for 15 intranet modules defined in modular monolith</li><li>ADR: real-time messaging (Azure Web PubSub/SignalR)</li><li>ADR: file storage (Blob + SAS)</li><li>ADR: replacing Supabase prototype with Cosmos + GraphQL</li></ul>
+,Task,,,,[BA] Walk through bolt prototype; confirm module scope and out-of-scope list,New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1,,
+,Task,,,,[DOC] Write ADR-0004 real-time messaging,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1,,
+,Task,,,,[DOC] Write ADR-0005 file/media storage and scanning,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1,,
+,Task,,,,[DOC] Write ADR-0006 prototype-to-production data model mapping,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1,,
+,Task,,,,[DOC] Update architecture diagram (C4 container level),New,1,,,3,3,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1,,
+,User Story,,,Shared backend module template,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP01; Sprint 1; MoSCoW-Must,"<p>As a developer I want a module template (domain, use case, repository, GraphQL type, tests) so that each new module is consistent.</p>","<ul><li>Template module with CRUD, paging, authorization attributes</li><li>Cosmos repository base with optimistic concurrency (etag)</li><li>Standard error model mapped to GraphQL errors</li><li>Audit fields (createdBy, createdAt, updatedBy, updatedAt) auto-populated</li></ul>"
+,Task,,,,[BE] Create generic Cosmos repository base with paging and etag concurrency,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,Task,,,,[BE] Create audit interceptor and soft-delete convention,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,Task,,,,[BE] Standardise GraphQL error filter and validation (FluentValidation),New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,Task,,,,[BE] Cursor-based pagination convention for HotChocolate,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 1,,
+,Task,,,,[QA] Unit + integration tests for repository base (Testcontainers),New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Epic,"EP02 Identity, Access & Security",,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,"<p>Replace the prototype username/password login with Entra ID SSO, role-based access and production security controls.</p>",
+,Feature,,Single Sign-On (Entra ID),,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; MoM-Priority,"<p>Corporate sign-in replaces the prototype ""Sign in to your workspace"" form.</p>",
+,User Story,,,Sign in with Microsoft Entra ID,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As an employee I want to sign in with my company account so that I do not need a separate password.</p>,"<ul><li>Login page shows ""Sign in with Microsoft"" (prototype username/password removed)</li><li>MSAL redirect flow with PKCE</li><li>Tokens acquired silently on refresh</li><li>Unauthenticated users redirected to sign-in</li><li>Deep links preserved after sign-in</li></ul>"
+,Task,,,,"[OPS] Register SPA + API apps in Entra, expose access_as_user scope",New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1; MoM-Priority,,
+,Task,,,,[FE] Rebuild login page to match prototype branding (WELCOME BACK) with SSO button,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 1; MoM-Priority,,
+,Task,,,,"[FE] Configure MSAL guard, interceptor and redirect handling",New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 1; MoM-Priority,,
+,Task,,,,"[BE] Validate JWT (audience, issuer, tenant) and map oid/preferred_username",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,"[QA] Auth tests: expired token, wrong audience, no token, deep link",New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,User Story,,,Sign out,,New,2,Architectural,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As an employee I want to sign out so that my session ends on shared devices.</p>,<ul><li>Sign out clears MSAL cache and local state</li><li>Redirects to Entra logout then login page</li></ul>
+,Task,,,,[FE] Implement sign-out from sidebar user menu,New,2,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 1; MoM-Priority,,
+,Task,,,,[QA] Verify session cleared and back-button does not expose data,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,User Story,,,User provisioning and profile sync,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 1; MoSCoW-Must; MoM-Priority,"<p>As the system I want a user profile created on first sign-in from Entra/Graph so that names, titles and photos appear across modules.</p>","<ul><li>Profile (name, job title, department, photo, manager) synced from Graph on first login and nightly</li><li>Prototype hard-coded people (Praveen Kumar, Meera Iyer...) replaced by real directory</li><li>People picker API for recipient/attendee selection</li></ul>"
+,Task,,,,[BE] Create UserProfile entity + repository,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[BE] First-login provisioning from Graph /me (OBO),New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[BE] Nightly directory sync job (Graph delta query),New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[BE] GraphQL searchPeople(query) for people picker,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[FE] Reusable people-picker component (autocomplete with avatar),New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 1; MoM-Priority,,
+,Task,,,,"[QA] Test provisioning, sync and picker",New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,Feature,,Authorization & Roles,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; MoM-Priority,"<p>Role-based access for Employee, HR, IT Agent, Facilities, Content Admin and Super Admin.</p>",
+,User Story,,,Role model mapped from Entra groups/app roles,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As an admin I want roles assigned from Entra so that access is managed centrally.</p>,"<ul><li>App roles: Employee, HRAdmin, ITAgent, FacilitiesAdmin, ContentAdmin, SuperAdmin</li><li>Roles flow in token and are enforced in GraphQL</li><li>UI hides admin actions for non-admins</li></ul>"
+,Task,,,,[OPS] Define app roles in Entra manifest and assign test groups,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1; MoM-Priority,,
+,Task,,,,[BE] Authorization policies per role; apply [Authorize] to resolvers,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[FE] Role-aware directive (*hasRole) and route guards,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 1; MoM-Priority,,
+,Task,,,,[QA] Authorization matrix test cases per module,New,1,,,4,4,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,User Story,,,Resource-level ownership rules,,New,1,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As an employee I want only my own tasks, tickets and reminders visible to me so that my data is private.</p>","<ul><li>Tasks, reminders, tickets filtered by owner</li><li>Edit/delete allowed only by owner or role admin</li><li>Negative tests prove cross-user access is denied</li></ul>"
+,Task,,,,[BE] Implement owner filter and ownership checks in repository base,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Cross-user access negative tests (IDOR),New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,Feature,,Application Security Hardening,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; MoM-Priority,<p>OWASP controls and compliance for go-live.</p>,
+,User Story,,,"Input validation, rate limiting and security headers",,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 3; MoSCoW-Must; MoM-Priority,<p>As a security owner I want the app hardened against common attacks so that it passes security review.</p>,"<ul><li>CSP, HSTS, X-Content-Type-Options, frame-ancestors headers</li><li>GraphQL depth/complexity limits and persisted queries in prod</li><li>Rate limiting per user on mutations and AI endpoint</li><li>All rich text sanitised (feed, kudos, ideas)</li></ul>"
+,Task,,,,"[BE] Configure HotChocolate cost analysis, depth limit, disable introspection in prod",New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Add ASP.NET rate limiter policies (per user / per endpoint),New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Configure CSP and security headers in staticwebapp.config.json,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] HTML sanitiser for user-generated content,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] OWASP ZAP baseline scan and triage,New,1,,,4,4,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,File upload security,,New,1,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As a security owner I want uploaded files validated and scanned so that malware cannot be distributed.</p>,"<ul><li>Allowed types/size enforced (images, video, pdf, docx, txt)</li><li>Defender for Storage malware scanning enabled</li><li>Files served via short-lived SAS URLs only</li></ul>"
+,Task,,,,[OPS] Enable Defender for Storage malware scanning,New,1,,,1,1,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 2; MoM-Priority,,
+,Task,,,,"[BE] Upload service: type/size validation, SAS issuance, scan result handling",New,1,,,5,5,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,"[QA] Upload negative tests (oversize, wrong type, EICAR test file)",New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Audit logging and data retention,,New,2,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP02; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As a compliance officer I want admin actions audited and retention defined so that we meet policy.</p>,"<ul><li>Audit log for admin actions (status changes, deletions, role-gated ops)</li><li>Retention: chat 1 yr, AI query log 30 days, audit 1 yr (TTL)</li><li>Data export/delete for a user on request</li></ul>"
+,Task,,,,[BE] Audit log collection + writer,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Configure TTL indexes per collection,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Admin GraphQL for user data export/delete,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Verify audit entries and TTL behaviour,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Epic,"EP03 App Shell, Design System & Navigation",,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Responsive application shell matching the prototype: sidebar with 15 modules, user card, leave balance widget, notifications and AI entry point.</p>",
+,Feature,,Design System,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03,"<p>Tokens and components reproducing the prototype look (sage/ink palette, cards, chips).</p>",
+,User Story,,,Design tokens and theme,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03; Sprint 1; MoSCoW-Must,<p>As a developer I want shared design tokens so that every page matches the prototype.</p>,"<ul><li>Colour, typography, spacing, radius tokens extracted from prototype</li><li>Light theme; dark theme tokens ready</li><li>Tailwind CDN in prototype replaced by build-time styling</li></ul>"
+,Task,,,,"[UX] Extract tokens (sage, sageSoft, ink, inkSoft, etc.) from prototype into Figma/spec",New,1,,,3,3,Design,onespace,,,OneSpace-Prod; UX; Sprint 1,,
+,Task,,,,[FE] Implement tokens as CSS custom properties + SCSS map,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] Replace Tailwind CDN with compiled Tailwind or SCSS utilities,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,User Story,,,Core component library,,New,1,Business,8,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03; Sprint 1; MoSCoW-Must,<p>As a developer I want reusable components so that modules are built quickly and consistently.</p>,"<ul><li>Button, Input, Textarea, Select, DatePicker, TimePicker, Card, Chip/Badge, Avatar, Modal, Toast, EmptyState, Skeleton, Tabs</li><li>All components keyboard accessible with ARIA</li><li>Storybook (or component gallery) published</li></ul>"
+,Task,,,,"[FE] Build form controls (input, textarea, select, date, time) with validation messages",New,1,,,6,6,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,"[FE] Build Card, Chip/Badge, Avatar, Tabs",New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] Build Modal/Dialog and Toast service,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] Build EmptyState and Skeleton loaders,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] Component gallery page / Storybook,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[QA] Accessibility check of components (axe),New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Feature,,Application Shell,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03,"<p>Sidebar navigation, header, user card, responsive behaviour.</p>",
+,User Story,,,Sidebar navigation with 15 modules,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03; Sprint 1; MoSCoW-Must,"<p>As an employee I want a left navigation so that I can reach Home, Idea Hub, Kudos Wall, Calendar, Events, Helpdesk, Room Booking, Gaming, Messages, Polls, Communities and My Tasks.</p>",<ul><li>Nav items and icons match prototype order</li><li>Active route highlighted</li><li>Lazy-loaded route per module</li><li>Collapses to drawer below 768px</li></ul>
+,Task,,,,"[FE] Create shell layout (sidebar, header, content outlet)",New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] Configure lazy routes for all modules with route titles,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] Responsive drawer + hamburger for mobile,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[QA] Navigation tests desktop + 390px mobile,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,User Story,,,User card and leave balance widget,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03; Sprint 2; MoSCoW-Must,"<p>As an employee I want my name, role and leave balance in the sidebar so that I see key info at a glance.</p>","<ul><li>Shows avatar, name, job title from profile</li><li>Leave balance card shows casual + sick days from Zoho People</li><li>Shows ""synced from Zoho People"" with last sync time; graceful fallback when unavailable</li></ul>"
+,Task,,,,[FE] User card component bound to me query,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[FE] Leave balance widget bound to leaveBalance query with loading/error states,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[BE] Cache leave balance per user (15 min) to limit Zoho calls,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[QA] Test with Zoho available/unavailable,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,"Global error, loading and offline handling",,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03; Sprint 1; MoSCoW-Must,<p>As an employee I want clear feedback when something fails so that I know what to do.</p>,<ul><li>Global HTTP/GraphQL error interceptor shows toast with correlation ID</li><li>404 and access-denied pages</li><li>Offline banner when network lost</li></ul>
+,Task,,,,[FE] Apollo error link + toast mapping,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] 404 / 403 pages,New,2,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[FE] Offline detection banner,New,2,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[QA] Error-state tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Feature,,Accessibility & Responsiveness,,,New,2,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03,<p>WCAG 2.1 AA and mobile support across all pages.</p>,
+,User Story,,,WCAG 2.1 AA compliance pass,,New,2,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP03; Sprint 4; MoSCoW-Must,<p>As an employee using assistive technology I want every page operable by keyboard and screen reader.</p>,<ul><li>axe: zero critical/serious issues on all pages</li><li>Focus order and visible focus everywhere</li><li>Colour contrast &gt;= 4.5:1</li></ul>
+,Task,,,,[QA] Automated axe scan in E2E suite for all routes,New,2,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] Manual screen-reader pass (NVDA) on key flows,New,2,,,4,4,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[FE] Fix accessibility defects,New,2,,,6,6,Development,onespace,,,OneSpace-Prod; FE; Sprint 4,,
+,Epic,EP04 Home Dashboard & Company Feed,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Landing page: greeting, company feed with photo/video posts, upcoming events, open tickets and quick links.</p>",
+,Feature,,Home Dashboard,,,New,2,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04,<p>Personalised landing page.</p>,
+,User Story,,,Greeting header with date and quick action,,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 1; MoSCoW-Must,<p>As an employee I want a personal greeting with today's date so that the home page feels personal.</p>,"<ul><li>""Good morning/afternoon/evening, &lt;first name&gt;"" by local time</li><li>Date shown as e.g. FRIDAY, SEP 4 (live date, not hard-coded)</li><li>""View my tasks"" button navigates to My Tasks</li></ul>"
+,Task,,,,[FE] Greeting header component with time-of-day logic,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,"[FE] Wire ""View my tasks"" CTA",New,2,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 1,,
+,Task,,,,[QA] Unit tests for greeting logic across time zones,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,User Story,,,Upcoming events widget,,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 2; MoSCoW-Must,<p>As an employee I want to see upcoming events on Home so that I do not miss them.</p>,"<ul><li>Shows next 3 events from Events module</li><li>""No upcoming events."" empty state</li><li>Click opens event detail</li></ul>"
+,Task,,,,[BE] GraphQL upcomingEvents(limit) query,New,2,,,1,1,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Upcoming events widget,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Widget tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,My open tickets widget,,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 2; MoSCoW-Must,<p>As an employee I want my open helpdesk tickets on Home so that I can track issues.</p>,"<ul><li>Shows ticket ID (HD-xxxx), title, status chip</li><li>Only my non-resolved tickets</li><li>Empty state when none</li></ul>"
+,Task,,,,[BE] GraphQL myOpenTickets query,New,2,,,1,1,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Open tickets widget with status chips,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Widget tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,Feature,,"Company Feed (""What's happening"")",,,New,2,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04,"<p>Posts from people, HR, Facilities and system activity.</p>",
+,User Story,,,"Create a feed post with text, photo or video",,New,2,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 3; MoSCoW-Must,<p>As an employee I want to share a moment with a photo or video so that colleagues stay connected.</p>,"<ul><li>Composer: text + attach Photo or Video</li><li>Validation: ""Write something or attach an image or video.""</li><li>Upload progress and failure message ""Could not post. Please try again.""</li><li>Media stored in Blob, served via SAS/CDN</li></ul>"
+,Task,,,,"[DB] FeedPost collection design (author, body, media[], category, createdAt)",New,2,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 3,,
+,Task,,,,[BE] createFeedPost mutation + media upload SAS endpoint,New,2,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Composer component with photo/video attach and preview,New,2,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[FE] Upload progress + retry,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Post creation tests incl. large video and invalid file,New,2,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,View the company feed,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 3; MoSCoW-Must,"<p>As an employee I want a chronological feed with categories (People Team, Benefits, Kudos, Facilities, Event) so that I know what is happening.</p>","<ul><li>Infinite scroll with cursor paging</li><li>Category chip, author, relative time (Today, Yesterday)</li><li>Image and video render inline; video lazy-loaded</li></ul>"
+,Task,,,,[BE] feed(cursor) query with paging,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Feed list with infinite scroll and media rendering,New,2,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Feed rendering tests,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Automatic activity posts,,New,3,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 3; MoSCoW-Should,"<p>As an employee I want system activity (new event added, kudos posted, room booked) to appear in the feed so that the company feels alive.</p>","<ul><li>Domain events publish feed items for: new event, kudos, idea status change</li><li>Activity items visually distinct from user posts</li><li>Admin can switch off activity types</li></ul>"
+,Task,,,,[BE] In-process domain event dispatcher + feed projector,New,3,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Activity item rendering,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Test each activity source,New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Feed moderation,,New,3,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 3; MoSCoW-Should,"<p>As a content admin I want to pin, hide or delete posts so that the feed stays appropriate.</p>","<ul><li>Admin actions: pin, unpin, hide, delete</li><li>Users can report a post</li><li>Audit entry for each moderation action</li></ul>"
+,Task,,,,[BE] Moderation mutations with ContentAdmin policy,New,3,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Post kebab menu with admin actions and report,New,3,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Moderation tests,New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,React and comment on posts,,New,4,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP04; Sprint 3; MoSCoW-Could,<p>As an employee I want to like and comment on posts so that I can engage.</p>,<ul><li>Like toggle with count</li><li>Comments thread (flat)</li><li>Notification to author</li></ul>
+,Task,,,,[BE] Reactions + comments model and mutations,New,4,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Like button and comment thread UI,New,4,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Engagement tests,New,4,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP05 Idea Hub,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Employees submit ideas that move through a 3-step workflow: Submitted -&gt; Under review -&gt; In pilot (""Your voice, actioned"").</p>",
+,Feature,,Idea Submission,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP05,<p>Submit ideas with optional attachment.</p>,
+,User Story,,,Submit an idea,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP05; Sprint 2; MoSCoW-Must,"<p>As an employee I want to submit an idea with title, description and attachment so that it can be reviewed.</p>","<ul><li>Fields: Title (""Give your idea a short, clear title""), Description, attachment (""Click to upload"")</li><li>Submitter taken from signed-in user (prototype ""Your name"" field removed)</li><li>Validation message when title/description missing</li><li>Status starts as Submitted</li></ul>"
+,Task,,,,"[DB] Idea collection (title, description, attachments, status, submitter, history[])",New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 2,,
+,Task,,,,[BE] submitIdea mutation with validation,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[BE] Attachment upload to idea-attachments container,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Submit idea form with drag-drop upload,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Submission tests incl. attachment,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Browse ideas,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP05; Sprint 2; MoSCoW-Must,<p>As an employee I want to browse ideas with status and summary so that I can see what is being actioned.</p>,"<ul><li>Card shows title, ""Submitted by &lt;name&gt;"", status chip, date</li><li>Show less / View details expands description</li><li>Filter by status, search by title</li><li>Workflow explainer ""Every idea goes through a 3-step workflow""</li></ul>"
+,Task,,,,"[BE] ideas(filter, cursor) query",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,"[FE] Idea list with cards, expand/collapse and filters",New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[FE] Workflow explainer banner,New,1,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] List and filter tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,Feature,,Idea Workflow & Review,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP05,<p>Reviewers move ideas through statuses.</p>,
+,User Story,,,Reviewer changes idea status,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP05; Sprint 2; MoSCoW-Must,<p>As an idea reviewer I want to move an idea to Under review or In pilot (or Declined) with a comment so that submitters know the outcome.</p>,<ul><li>Allowed transitions: Submitted-&gt;Under review-&gt;In pilot; any-&gt;Declined</li><li>Status comment stored in history and shown on detail</li><li>Only ContentAdmin/Reviewer role can change status</li></ul>
+,Task,,,,[BE] State machine for idea status + transition validation,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[BE] changeIdeaStatus mutation with policy,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Reviewer action panel on idea detail,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Transition matrix tests incl. unauthorised user,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Notify submitter of status change,,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP05; Sprint 3; MoSCoW-Should,<p>As a submitter I want to be notified when my idea status changes so that I stay informed.</p>,<ul><li>In-app notification on each transition</li><li>Feed activity post when idea reaches In pilot</li></ul>
+,Task,,,,[BE] Publish IdeaStatusChanged event -> notification + feed,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[QA] Notification tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Upvote ideas,,New,4,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP05; Sprint 3; MoSCoW-Could,<p>As an employee I want to upvote ideas so that popular ideas are prioritised.</p>,"<ul><li>One vote per user per idea, toggle</li><li>Sort by most votes</li></ul>"
+,Task,,,,[BE] Idea vote mutation + count,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Upvote button and sort option,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Vote tests,New,4,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP06 Kudos Wall,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Peer recognition with badge categories and inspiration prompts (""Celebrate the wins"").</p>",
+,Feature,,Give Kudos,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP06,<p>Send recognition to a colleague.</p>,
+,User Story,,,Send kudos to a colleague,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP06; Sprint 2; MoSCoW-Must,<p>As an employee I want to send kudos with a category and message so that I can recognise a colleague.</p>,"<ul><li>From = signed-in user; Recipient via people picker</li><li>Categories: Ownership, Speed, Mentorship, Excellence, Teamwork, Innovation, Kindness, Going the extra mile</li><li>Validation: ""Please fill in your name, the recipient, and a compliment.""</li><li>Cannot send kudos to self</li></ul>"
+,Task,,,,"[DB] Kudos collection (from, to, category, message, createdAt)",New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 2,,
+,Task,,,,[BE] giveKudos mutation with validation,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Give kudos form with people picker and category chips,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Kudos submission tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Inspiration prompts,,New,3,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP06; Sprint 2; MoSCoW-Should,"<p>As an employee I want suggested compliments (""Need inspiration? Tap a prompt"") so that writing kudos is easy.</p>",<ul><li>8 prompts from prototype shown as chips</li><li>Tap inserts text into compliment field</li><li>Prompts configurable by admin</li></ul>
+,Task,,,,[BE] Kudos prompt config (seeded list),New,3,,,1,1,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Prompt chips inserting into textarea,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Prompt tests,New,3,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,Feature,,Kudos Wall Display,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP06,<p>Public wall of recognition.</p>,
+,User Story,,,View the kudos wall,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP06; Sprint 2; MoSCoW-Must,<p>As an employee I want to see recent kudos with badges so that wins are celebrated.</p>,"<ul><li>Grid of kudos cards (from, to, badge, message, date)</li><li>Filter by category and ""kudos for me""</li><li>Paging</li></ul>"
+,Task,,,,"[BE] kudosWall(filter, cursor) query",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Kudos wall grid with badge styling and filters,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Wall display tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Notify recipient and post to feed,,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP06; Sprint 3; MoSCoW-Should,<p>As a recipient I want to be notified when I receive kudos so that I see the recognition.</p>,"<ul><li>In-app notification to recipient</li><li>Feed activity ""&lt;A&gt; posted kudos to &lt;B&gt;""</li><li>Optional Teams message to recipient</li></ul>"
+,Task,,,,[BE] KudosGiven event -> notification + feed,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[BE] Optional Teams chat message via Graph,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[QA] Notification tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Kudos leaderboard,,New,4,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP06; Sprint 3; MoSCoW-Could,<p>As HR I want a monthly kudos leaderboard so that culture champions are visible.</p>,<ul><li>Top receivers and givers this month</li><li>Visible to all; export CSV for HR</li></ul>
+,Task,,,,[BE] Leaderboard aggregation query,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Leaderboard panel,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Leaderboard tests,New,4,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP07 Calendar & Events,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,"<p>Company events with day schedules, holidays, and a month calendar view.</p>",
+,Feature,,Events Management,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; MoM-Priority,<p>Create and view events with a schedule for the day.</p>,
+,User Story,,,Add an event with day schedule,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As an event organiser I want to add an event with date, time, location and a schedule of activities so that attendees know what happens.</p>","<ul><li>Fields: Event title, Date, Time &amp; location, Description</li><li>""Schedule for the day"": repeatable rows (time + activity description)</li><li>Validation: ""Please fill in the event title, date, and time.""</li><li>Only Organiser/ContentAdmin/HR roles can create</li></ul>"
+,Task,,,,[DB] Event collection with embedded schedule[] (replaces events + event_schedule tables),New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] createEvent / updateEvent / deleteEvent mutations,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Add event modal with repeatable schedule rows,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Event CRUD tests incl. schedule rows,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Events & holidays list,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As an employee I want to see upcoming events and holidays with their schedules so that I can plan.</p>,"<ul><li>List sorted by date with Event / Holiday type badges</li><li>Expand to show schedule</li><li>Empty state ""No events yet. Add an event and outline what happens that day.""</li></ul>"
+,Task,,,,"[BE] events(range, type) query",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Events list with expandable schedule,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] List tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,RSVP and add to Outlook calendar,,New,3,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As an employee I want to RSVP and add an event to my Outlook calendar so that I get reminders.</p>,"<ul><li>RSVP Going / Not going with attendee count</li><li>""Add to calendar"" creates Outlook event via Graph or downloads .ics</li></ul>"
+,Task,,,,[BE] RSVP mutation + attendee count,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Create Outlook event via Graph (Calendars.ReadWrite) or .ics fallback,New,3,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] RSVP and Add-to-calendar buttons,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] RSVP and calendar tests,New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Feature,,Calendar View,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; MoM-Priority,<p>Month at a glance.</p>,
+,User Story,,,Month calendar view,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As an employee I want a month grid showing events and holidays so that I see the month at a glance.</p>,"<ul><li>Month grid with prev/next navigation (January-December)</li><li>Days with events marked; click a day lists its events</li><li>""Events this month"" side list; ""No events this month."" empty state</li><li>Today highlighted</li></ul>"
+,Task,,,,[FE] Month grid component with navigation,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Day selection and events-this-month panel,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Calendar tests incl. month boundaries and leap year,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Holidays from Zoho People,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; Sprint 3; MoSCoW-Must; MoM-Priority,<p>As an employee I want official holidays shown on the calendar so that I know office closures.</p>,<ul><li>Holiday list pulled from Zoho People listholidays for user location</li><li>Cached daily</li><li>Shown with Holiday badge</li></ul>
+,Task,,,,[BE] Zoho holiday sync job (daily) into events as type Holiday,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Holiday sync tests with fixture,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Overlay my Outlook calendar,,New,4,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP07; Sprint 3; MoSCoW-Could; MoM-Priority,<p>As an employee I want my own Outlook meetings overlaid so that I see conflicts.</p>,"<ul><li>Toggle ""Show my meetings""</li><li>Uses Graph calendarView for visible month</li></ul>"
+,Task,,,,[BE] myCalendar(range) via Graph OBO,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Overlay toggle and rendering,New,4,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Overlay tests,New,4,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Epic,EP08 Helpdesk,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Raise and track IT/admin tickets (""Get unstuck"").</p>",
+,Feature,,Ticket Submission & Tracking (Employee),,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP08,<p>Employees raise and track tickets.</p>,
+,User Story,,,Raise a ticket,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP08; Sprint 2; MoSCoW-Must,<p>As an employee I want to raise a ticket with category and description so that I get help.</p>,"<ul><li>Categories: General, Hardware, Software, Access, Network</li><li>Field ""What do you need help with?"" + description + optional attachment</li><li>Auto ticket number HD-#### (sequential)</li><li>Validation message when title missing; Cancel / Submit ticket</li></ul>"
+,Task,,,,[DB] Ticket collection + counter document for HD sequence,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; DB; Sprint 2,,
+,Task,,,,[BE] raiseTicket mutation with sequential ID generation (concurrency safe),New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Raise ticket modal,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Ticket creation tests incl. concurrent ID generation,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Track my tickets,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP08; Sprint 2; MoSCoW-Must,<p>As an employee I want to see my tickets and their status so that I know progress.</p>,"<ul><li>Statuses: Open, In progress, Awaiting approval, Resolved, Closed</li><li>Timeline of status changes and comments</li><li>I can add a comment and reopen within 7 days of resolve</li></ul>"
+,Task,,,,[BE] myTickets query + addTicketComment + reopenTicket,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] My tickets list and detail with timeline,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Tracking tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,Feature,,Agent Queue (IT / Facilities),,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP08,<p>Agents work the queue.</p>,
+,User Story,,,Agent ticket queue,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP08; Sprint 2; MoSCoW-Must,<p>As an IT agent I want a queue of tickets by category and status so that I can work them.</p>,"<ul><li>Queue filters: category, status, assignee, age</li><li>Assign to me / reassign</li><li>Change status with comment</li><li>Only ITAgent/FacilitiesAdmin roles</li></ul>"
+,Task,,,,[BE] ticketQueue query + assignTicket + changeTicketStatus,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Agent queue table with filters and bulk assign,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Agent workflow tests,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Approval step for Access tickets,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP08; Sprint 3; MoSCoW-Should,<p>As a manager I want to approve access requests so that access is controlled.</p>,<ul><li>Access category tickets go to Awaiting approval with requester's manager (from Graph)</li><li>Manager approves/rejects from notification</li></ul>
+,Task,,,,[BE] Approval workflow using manager lookup,New,2,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Approve/reject UI,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Approval tests,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Ticket notifications and SLA,,New,3,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP08; Sprint 3; MoSCoW-Should,<p>As an employee I want notifications on ticket updates and SLA targets so that issues are handled on time.</p>,"<ul><li>Notify requester on status/comment</li><li>SLA by category (e.g. Access 8h, Hardware 24h) with breach flag in queue</li></ul>"
+,Task,,,,[BE] Ticket events -> notifications,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[BE] SLA calculation and breach flag,New,3,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] SLA badge in queue,New,3,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] SLA tests,New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP09 Room Booking,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Reserve meeting rooms (Board Room A-D) with conflict detection (""Reserve your space"").</p>",
+,Feature,,Room Catalogue,,,New,2,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP09,<p>Rooms master data.</p>,
+,User Story,,,Manage rooms,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP09; Sprint 2; MoSCoW-Must,"<p>As a facilities admin I want to manage rooms (name, capacity, location, amenities) so that bookable rooms are accurate.</p>","<ul><li>Seed Board Room A, B, C, D</li><li>CRUD for FacilitiesAdmin</li><li>Deactivate a room without losing history</li></ul>"
+,Task,,,,[DB] Room collection + seed script,New,2,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 2,,
+,Task,,,,[BE] Room CRUD mutations with FacilitiesAdmin policy,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Rooms admin page,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Room admin tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,Feature,,Booking,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP09,<p>Book and manage reservations.</p>,
+,User Story,,,View bookings by date,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP09; Sprint 2; MoSCoW-Must,<p>As an employee I want to see bookings for a selected date per room so that I can find a free slot.</p>,"<ul><li>Date picker; timeline per room</li><li>Booking shows ""Booked by &lt;name&gt;"", time, attendees</li><li>""No bookings for this date."" empty state</li></ul>"
+,Task,,,,"[BE] bookings(date, roomId) query",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Day timeline grid per room,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] View tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Book a room with conflict detection,,New,1,Business,8,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP09; Sprint 2; MoSCoW-Must,<p>As an employee I want to book a room for a time slot with attendees so that my meeting has a space.</p>,"<ul><li>Fields: Room, Date, Start time, End time, Attendees (people picker, replaces comma-separated names)</li><li>Server-side overlap check: ""That time slot is already booked for this room. Please pick another.""</li><li>Race-safe: two simultaneous bookings for same slot -&gt; only one succeeds</li><li>Confirm booking shows success toast</li></ul>"
+,Task,,,,[BE] bookRoom mutation with overlap validation,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[BE] Concurrency guard (unique slot reservation / transactional check),New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Booking form with live conflict hint,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Conflict and race-condition tests (parallel requests),New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Cancel or modify my booking,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP09; Sprint 2; MoSCoW-Must,<p>As an employee I want to cancel or change my booking so that rooms are freed.</p>,<ul><li>Owner can edit time/attendees or cancel</li><li>Admin can cancel any booking</li><li>Attendees notified of change/cancel</li></ul>
+,Task,,,,[BE] updateBooking / cancelBooking mutations,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Edit/cancel actions,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Modify/cancel tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Send Outlook invite for booking,,New,3,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP09; Sprint 3; MoSCoW-Should,<p>As an organiser I want attendees to receive an Outlook invite so that the meeting is in their calendars.</p>,"<ul><li>Optional ""Send invite"" creates Outlook event with attendees and room location via Graph</li><li>Cancellation cancels the invite</li></ul>"
+,Task,,,,[BE] Graph event create/cancel for booking,New,3,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[QA] Invite tests,New,3,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP10 My Tasks,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Personal task list (""Stay on top of things"").</p>",
+,Feature,,Personal Tasks,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP10,"<p>Add, complete and manage tasks.</p>",
+,User Story,,,Add and list tasks,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP10; Sprint 2; MoSCoW-Must,<p>As an employee I want to add tasks with optional due date so that I track my work.</p>,"<ul><li>Field ""What do you need to do?"" + due date</li><li>List shows ""Due &lt;date&gt;"", overdue highlighted</li><li>Empty state ""No tasks yet...""</li></ul>"
+,Task,,,,"[DB] Task collection (owner, title, dueDate, done, source)",New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 2,,
+,Task,,,,"[BE] addTask, tasks queries",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Task input and list,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Task tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,"Complete, edit and delete tasks",,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP10; Sprint 2; MoSCoW-Must,"<p>As an employee I want to tick off, edit or delete tasks so that the list stays current.</p>",<ul><li>Checkbox completes task; completed section collapsible</li><li>Inline edit; delete with undo toast</li></ul>
+,Task,,,,"[BE] updateTask, deleteTask mutations",New,2,,,1,1,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Complete/edit/delete interactions with undo,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Task lifecycle tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Sync with Microsoft To Do,,New,4,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP10; Sprint 3; MoSCoW-Could,<p>As an employee I want my tasks synced with Microsoft To Do so that I have one list.</p>,"<ul><li>Two-way sync of OneSpace list to a To Do list ""OneSpace""</li><li>Conflict resolution: last write wins</li></ul>"
+,Task,,,,[BE] Graph To Do sync service,New,4,,,6,6,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[QA] Sync tests,New,4,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP11 Polls,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Quick pulse checks (""Quick pulse checks"").</p>",
+,Feature,,Poll Management,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP11,<p>Create and manage polls.</p>,
+,User Story,,,Create a poll,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP11; Sprint 3; MoSCoW-Must,<p>As an employee I want to create a poll with 2-6 options so that I get team input.</p>,"<ul><li>Question + 2-6 options + optional close date</li><li>Option: anonymous or named results</li><li>Empty state ""No polls yet...""</li></ul>"
+,Task,,,,[DB] Poll collection with options[] and votes (one doc per vote),New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 3,,
+,Task,,,,[BE] createPoll mutation with validation,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] New poll form with dynamic options,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Poll creation tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Vote on a poll,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP11; Sprint 3; MoSCoW-Must,<p>As an employee I want to vote once on an active poll and see results so that my opinion counts.</p>,"<ul><li>""Click an option to vote.""; one vote per user (unique index)</li><li>After voting: ""You voted."" with percentage bars</li><li>Change vote allowed while active</li></ul>"
+,Task,,,,"[BE] vote mutation with unique (pollId,userId)",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[BE] Results aggregation,New,1,,,1,1,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Vote UI with results bars,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Voting tests incl. duplicate vote,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Close a poll,,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP11; Sprint 3; MoSCoW-Must,<p>As a poll owner I want to close a poll so that results are final.</p>,"<ul><li>Owner/admin can ""Close poll""; auto-close at close date</li><li>Active / Closed tabs; ""This poll is closed."" message</li></ul>"
+,Task,,,,[BE] closePoll mutation + scheduled auto-close job,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Active/Closed tabs and close action,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Close tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Live poll results,,New,4,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP11; Sprint 3; MoSCoW-Could,<p>As an employee I want results to update live so that I see the pulse in real time.</p>,<ul><li>Vote counts push via Web PubSub to viewers</li></ul>
+,Task,,,,[BE] Publish vote events to Web PubSub group per poll,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Subscribe and update results,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Live update tests,New,4,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP12 Communities,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Interest groups (""Find your people"").</p>",
+,Feature,,Community Management,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP12,"<p>Create, browse and join communities.</p>",
+,User Story,,,Start a community,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP12; Sprint 3; MoSCoW-Must,"<p>As an employee I want to start a community with name, category and description so that people with shared interests can connect.</p>","<ul><li>Categories: Tech, Hobbies, Sports, Books, Wellness, Food</li><li>Field ""What is this community about?""</li><li>Creator becomes owner</li></ul>"
+,Task,,,,[DB] Community collection + membership collection,New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 3,,
+,Task,,,,[BE] createCommunity mutation,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Start a community modal,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Creation tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Browse and join communities,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP12; Sprint 3; MoSCoW-Must,<p>As an employee I want to browse communities and Join/leave them so that I find my people.</p>,"<ul><li>Grid filtered by category with member count</li><li>Join / Joined toggle</li><li>Empty state ""No communities yet...""</li></ul>"
+,Task,,,,[BE] communities query + join/leave mutations,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Community grid with filters and join toggle,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Join/leave tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Community page with posts,,New,3,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP12; Sprint 3; MoSCoW-Should,<p>As a member I want a community page with posts and members so that the group can talk.</p>,"<ul><li>Community detail: description, members list, posts (reuse feed composer scoped to community)</li><li>Only members can post</li></ul>"
+,Task,,,,[BE] Scope feed posts to communityId,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Community detail page reusing feed components,New,3,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Community posts tests,New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Community moderation,,New,4,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP12; Sprint 3; MoSCoW-Could,"<p>As a community owner I want to edit, archive or remove members so that the community stays healthy.</p>",<ul><li>Owner edit/archive; ContentAdmin override</li><li>Remove member</li></ul>
+,Task,,,,[BE] Owner moderation mutations,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Owner settings panel,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Moderation tests,New,4,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP13 Messages (Real-time Chat),,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>One-to-one messaging with presence (""Connect"").</p>",
+,Feature,,Chat Infrastructure,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP13,<p>Real-time transport and storage.</p>,
+,User Story,,,Real-time messaging backbone,,New,1,Business,8,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP13; Sprint 3; MoSCoW-Must,<p>As the system I want a real-time channel so that messages and notifications arrive instantly.</p>,<ul><li>Azure Web PubSub hub with Entra-authenticated client tokens</li><li>Per-user groups; reconnect with backoff</li><li>Message persistence in Cosmos (conversationId partition)</li></ul>
+,Task,,,,[BE] Web PubSub negotiate endpoint issuing user-scoped tokens,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[BE] Message persistence + publish service,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,"[FE] Real-time client service (connect, reconnect, dispatch)",New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Connection resilience tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Feature,,Conversations,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP13,<p>Chats and team list.</p>,
+,User Story,,,Chats and Team tabs with presence,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP13; Sprint 3; MoSCoW-Must,<p>As an employee I want a Chats list and a Team list with online/offline status so that I know who is available.</p>,"<ul><li>Chats: recent conversations with last message and unread count</li><li>Team: colleagues with Online/Offline/""Active now"" from Teams presence (Graph)</li><li>""Select a teammate to start a conversation."" placeholder</li></ul>"
+,Task,,,,[BE] conversations query with unread counts,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,"[BE] Presence via Graph (batch, cached 60s)",New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Chats/Team tabs with presence dots,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Presence and list tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Send and receive messages,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP13; Sprint 3; MoSCoW-Must,<p>As an employee I want to send a message and see replies in real time so that I can collaborate.</p>,<ul><li>Messages appear instantly for both parties</li><li>Delivered/read state</li><li>History loads with scroll-back paging</li><li>Prototype canned auto-replies removed</li></ul>
+,Task,,,,[BE] sendMessage mutation + markRead,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,"[FE] Conversation view with composer, bubbles, scroll-back",New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Messaging E2E with two users,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Typing indicator and unread badges,,New,3,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP13; Sprint 3; MoSCoW-Should,<p>As an employee I want typing indicators and unread badges in the nav so that I notice new messages.</p>,<ul><li>Typing indicator (ephemeral event)</li><li>Unread total badge on Messages nav item</li></ul>
+,Task,,,,[BE] Typing ephemeral event,New,3,,,1,1,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Typing indicator and nav badge,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Indicator tests,New,3,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Send attachments in chat,,New,4,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP13; Sprint 3; MoSCoW-Could,<p>As an employee I want to share files/images in chat so that I can exchange content.</p>,<ul><li>Upload via shared upload service; preview images</li></ul>
+,Task,,,,[BE] Chat attachment support,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Attachment button and preview,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Attachment tests,New,4,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,"EP14 Gaming (""Take a break"")",,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,<p>Single-player Sudoku and Chess vs AI.</p>,
+,Feature,,Sudoku,,,New,3,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP14,<p>Puzzle with difficulty levels.</p>,
+,User Story,,,Play Sudoku with difficulty levels,,New,3,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP14; Sprint 3; MoSCoW-Could,"<p>As an employee I want to play Sudoku at Easy, Intermediate or Expert so that I can take a break.</p>","<ul><li>Difficulties: Easy (Relaxed play), Intermediate (Balanced challenge), Expert (minimal clues)</li><li>New puzzle generator with unique solution</li><li>Conflict highlighting; Reset; ""Solved in &lt;time&gt;"" on completion</li><li>Keyboard and mobile input</li></ul>"
+,Task,,,,[FE] Port Sudoku generator/solver from prototype and add unit tests,New,3,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[FE] Sudoku board UI with keyboard and touch input,New,3,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[FE] Timer and solved state,New,3,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,"[QA] Sudoku tests (generator validity, completion)",New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Feature,,Chess,,,New,4,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP14,<p>Chess vs AI.</p>,
+,User Story,,,Play Chess against AI,,New,4,Business,8,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP14; Sprint 3; MoSCoW-Could,<p>As an employee I want to play chess (White) against an AI at chosen difficulty so that I can unwind.</p>,"<ul><li>Legal move validation incl. castling, en passant, promotion, check/checkmate (replace prototype ""King captured"" rule)</li><li>AI difficulty Easy/Intermediate/Expert</li><li>Move history panel; ""No moves yet. White moves first.""; Reset</li><li>AI runs in Web Worker (no UI freeze)</li></ul>"
+,Task,,,,[FE] Integrate chess.js for rules,New,4,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[FE] AI engine in Web Worker (minimax/alpha-beta or Stockfish WASM) with 3 levels,New,4,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,"[FE] Board UI, move history, reset",New,4,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Chess rules and AI tests,New,4,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Feature,,Gaming Hub,,,New,4,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP14,<p>Game selection and scores.</p>,
+,User Story,,,Gaming hub and personal best scores,,New,4,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP14; Sprint 3; MoSCoW-Could,<p>As an employee I want a games page with my best scores so that I track progress.</p>,"<ul><li>Game cards (Sudoku, Chess) with difficulty selector</li><li>Personal best time/wins stored server-side</li><li>Admin toggle to disable gaming (policy)</li></ul>"
+,Task,,,,[BE] Game score mutation/query + feature flag,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Gaming hub page,New,4,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Hub tests,New,4,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP15 OneSpace AI Assistant,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Conversational assistant that answers questions and performs actions across modules (book room, give kudos, submit idea, events, tickets, reminders, documents). Builds on the existing Claude tool loop + allowlist in OneSpace.Assistant.</p>",
+,Feature,,Assistant Experience,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15,<p>Chat panel available from every page.</p>,
+,User Story,,,AI assistant panel,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 2; MoSCoW-Must,<p>As an employee I want an AI panel available on every page so that I can ask or act in one sentence.</p>,"<ul><li>Floating/side panel ""OneSpace AI"" accessible from shell</li><li>Suggested prompts (What events are coming up?, Book a room at 6:00 PM, Write kudos to..., Remind me to...)</li><li>Streaming responses; conversation history; New conversation</li><li>Errors: ""I had trouble retrieving that. Please try again.""</li></ul>"
+,Task,,,,[FE] Assistant panel component with suggestion chips,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[FE] Streaming response rendering (GraphQL subscription or SSE),New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[BE] Streaming endpoint for ask,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[QA] Panel UX tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,User Story,,,Confirm-before-action pattern,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 2; MoSCoW-Must,"<p>As an employee I want the assistant to confirm before it books, posts or submits so that nothing happens by mistake.</p>","<ul><li>Write actions return a confirmation card (Confirm / Cancel)</li><li>Confirmation token expires (e.g. 5 min): ""Sorry, that action expired. Please try again.""</li><li>Cancel replies ""No problem, cancelled. What else can I help with?""</li><li>Write tools added to server-side allowlist (ADR-0003) with per-tool authorization</li></ul>"
+,Task,,,,[BE] Pending-action store with expiry and single-use token,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[BE] Extend tool allowlist with write tools and policy checks,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2,,
+,Task,,,,[FE] Confirmation card component,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2,,
+,Task,,,,[QA] Confirm/cancel/expiry tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2,,
+,Feature,,Assistant Tools (Module Actions),,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15,<p>Tool definitions the model can call.</p>,
+,User Story,,,Tool: book a room,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,"<p>As an employee I want to say ""Book Board Room A at 6 PM for team sync"" so that the room is booked.</p>","<ul><li>Slot-filling asks for missing room/time/duration</li><li>Uses same bookRoom use case and conflict check</li><li>Booking tagged ""Booked via OneSpace AI""</li></ul>"
+,Task,,,,[AI] Define book_room tool schema and handler,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[AI] Slot-filling prompts for missing fields,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[QA] Conversation test scripts for booking,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Tool: give kudos,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,"<p>As an employee I want to say ""Write kudos to Praveen saying great work with badge Ownership"" so that kudos are posted.</p>","<ul><li>Asks ""Who do you want to send kudos to?"" / ""What message should I write?"" when missing</li><li>Resolves recipient via people search; disambiguates duplicates</li><li>Default category Appreciation if none</li></ul>"
+,Task,,,,[AI] Define give_kudos tool + recipient resolution,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[QA] Kudos conversation tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Tool: submit an idea,,New,2,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,<p>As an employee I want to submit an idea by chatting so that ideas are captured quickly.</p>,"<ul><li>Asks ""What is the title of your idea?"" then description</li><li>Idea tagged ""Submitted via OneSpace AI""</li></ul>"
+,Task,,,,[AI] Define submit_idea tool,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[QA] Idea conversation tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Tools: events and my tickets queries,,New,1,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,"<p>As an employee I want to ask ""What events are coming up?"" or ""My open tickets"" so that I get answers instantly.</p>","<ul><li>Lists upcoming events or ""No upcoming events are currently scheduled.""</li><li>Lists my open tickets or ""You have no open tickets. All issues are resolved.""</li><li>Recent updates/announcements intent</li></ul>"
+,Task,,,,"[AI] Define list_events, list_my_tickets, recent_updates tools",New,1,,,3,3,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[QA] Query intent tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Tool: reminders,,New,2,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,"<p>As an employee I want to say ""Remind me to submit the expense report at 5 PM"" so that I get reminded.</p>","<ul><li>Creates reminder with parsed time (user time zone)</li><li>Lists reminders / ""You have no active reminders.""</li><li>Reminder fires as in-app notification (and optional Teams message) at due time</li></ul>"
+,Task,,,,"[DB] Reminder collection (owner, text, dueAt, status)",New,2,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 3,,
+,Task,,,,[AI] Define create_reminder / list_reminders tools with time parsing,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[BE] Scheduled reminder dispatcher (background service / Azure Function),New,2,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[QA] Reminder tests incl. time zones,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,"Tools: HR self-service (leave, holidays, policies)",,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,"<p>As an employee I want to ask about leave balance, holidays and policies so that HR errands take one question (existing Phase 0 scope).</p>","<ul><li>Existing FR-1..FR-5 tools wired into the new shell</li><li>Answers cite sources (Zoho, ComplyKaro, M365)</li></ul>"
+,Task,,,,[AI] Merge Phase 0 tools into unified tool catalogue,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[FE] Source chips on answers,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Regression of FR-1..FR-5 scenarios,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Feature,,AI Knowledge Base (Documents),,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15,<p>Admin-managed documents the assistant can reference.</p>,
+,User Story,,,Manage AI reference documents,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,<p>As a content admin I want to add documents for the assistant to reference so that it answers company-specific questions.</p>,"<ul><li>Add document: title + upload file (pdf, docx, txt, md) or paste content (""Choose file"", ""Save document"")</li><li>List and delete documents; empty state ""No documents yet...""</li><li>ContentAdmin only</li></ul>"
+,Task,,,,[BE] Document upload + text extraction (pdf/docx),New,1,,,5,5,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[BE] Chunking and embedding into Cosmos vCore vector index,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Documents admin page,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Document ingestion tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Answer from documents (RAG),,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 3; MoSCoW-Must,<p>As an employee I want the assistant to answer from company documents with citations so that answers are trustworthy.</p>,"<ul><li>Hybrid retrieval (vector + keyword, FR-3) replaces prototype keyword match</li><li>Answer cites document title</li><li>""I don't know"" when no relevant content</li></ul>"
+,Task,,,,[AI] search_documents tool using hybrid retrieval,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[AI] Grounding prompt + citation formatting,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; AI; Sprint 3,,
+,Task,,,,[QA] Golden question set (30 Qs) evaluation,New,1,,,4,4,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Feature,,"AI Quality, Safety & Cost",,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15,<p>Guardrails for production AI.</p>,
+,User Story,,,"AI evaluation, safety and cost controls",,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP15; Sprint 4; MoSCoW-Must,<p>As a product owner I want AI quality measured and costs bounded so that the assistant is safe for production.</p>,<ul><li>Eval suite: intent accuracy &gt;= 90% on 100 scripted prompts</li><li>Prompt-injection tests (documents and user input) pass</li><li>Per-user daily token budget; usage dashboard</li><li>Query logging per FR-4</li></ul>
+,Task,,,,[AI] Build eval harness and scripted prompt set,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; AI; Sprint 4,,
+,Task,,,,[SEC] Prompt-injection and data-exfiltration test cases,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; SEC; Sprint 4,,
+,Task,,,,[BE] Per-user token budget + usage metrics,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 4,,
+,Task,,,,[QA] Run eval and record baseline,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Epic,EP16 Notifications,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,<p>In-app notification centre and delivery channels.</p>,
+,Feature,,Notification Centre,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP16,<p>Bell icon with list and read state.</p>,
+,User Story,,,Notification centre,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP16; Sprint 3; MoSCoW-Must,<p>As an employee I want a notifications bell with unread count so that I see what needs my attention.</p>,"<ul><li>Bell with unread badge in header</li><li>List: ""New event added"", ""&lt;A&gt; posted kudos to &lt;B&gt;"", ""Board Room A booked by..."" etc.</li><li>""Mark all read""; ""No notifications."" empty state</li><li>Click navigates to source item</li></ul>"
+,Task,,,,"[DB] Notification collection (userId partition, TTL 90 days)",New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 3,,
+,Task,,,,[BE] Notification service + notifications query + markRead/markAllRead,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[BE] Push new notifications via Web PubSub,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,"[FE] Bell, dropdown list and deep links",New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Notification tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,User Story,,,Notification preferences and Teams/email delivery,,New,3,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP16; Sprint 3; MoSCoW-Should,<p>As an employee I want to choose which notifications I get and where so that I am not spammed.</p>,"<ul><li>Per-type toggles (in-app, Teams, email)</li><li>Teams activity feed / email via Graph for opted-in types</li></ul>"
+,Task,,,,[BE] Preferences model + channel router,New,3,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[BE] Teams/email senders via Graph,New,3,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Preferences page,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[QA] Preference tests,New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP17 Integrations (Zoho People & Microsoft 365),,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,"<p>Production-grade connectors used by Home, Calendar, Messages, Assistant.</p>",
+,Feature,,Zoho People,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; MoM-Priority,<p>Leave and holiday data.</p>,
+,User Story,,,Production Zoho People connection,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As the system I want a reliable Zoho People connection so that leave balance and holidays are accurate.</p>,"<ul><li>Per-employee OAuth consent completed and verified with real users</li><li>Retries for 5xx, circuit breaker, timeouts</li><li>Recorded-fixture integration tests</li></ul>"
+,Task,,,,[BE] Complete live Zoho consent and verify tools/list argument names,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,"[BE] Add Polly resilience (retry, circuit breaker, timeout)",New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[QA] Integration tests with recorded MCP server,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,User Story,,,Apply for leave from OneSpace,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As an employee I want to apply for leave in OneSpace so that I don't have to open Zoho People.</p>,<ul><li>Leave types and balance from Zoho (fetchApplicableLeaveTypes)</li><li>Leave preview shows days counted (leavePreview) before submit</li><li>Submit via applyLeave; status reflected from Zoho</li><li>Cancel pending leave</li></ul>
+,Task,,,,"[BE] Zoho write tools (applyLeave, leavePreview, cancelLeave) added to allowlist with per-user consent",New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] GraphQL applyLeave / cancelLeave / myLeaveRecords,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Apply leave form with preview and my leave history,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Leave apply/cancel tests against Zoho sandbox,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Attendance check-in/out and WFH request,,New,2,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As an employee I want to check in/out and raise WFH requests from OneSpace so that daily Zoho tasks are in one place.</p>,<ul><li>Check-in / check-out button with current status</li><li>WFH request submission</li><li>Attendance summary for current month</li></ul>
+,Task,,,,[BE] Zoho checkIn/checkOut/addWFHRequest/getAttendanceSummary integration,New,2,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Attendance widget and WFH form,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Attendance tests,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Zoho People quick links (SSO deep links),,New,1,Architectural,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As an employee I want one-click links into Zoho People pages so that anything not built in OneSpace is one click away.</p>,"<ul><li>Quick-links panel: payslips, profile, timesheets, etc.</li><li>Zoho configured for SAML SSO with Entra ID so no second login</li></ul>"
+,Task,,,,[OPS] Configure Zoho People SAML SSO with Entra ID enterprise app,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1; MoM-Priority,,
+,Task,,,,[FE] Zoho quick-links panel,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 1; MoM-Priority,,
+,Task,,,,[QA] SSO deep-link tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,User Story,,,Leave and approvals via AI assistant,,New,2,Architectural,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; Sprint 3; MoSCoW-Should; MoM-Priority,"<p>As an employee I want to say ""Apply casual leave next Friday"" so that leave is raised in one sentence.</p>",<ul><li>Uses confirm-before-action pattern</li><li>Shows balance impact before confirm</li></ul>
+,Task,,,,[AI] apply_leave tool with preview + confirmation,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; AI; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Leave conversation tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Feature,,Microsoft 365 (Graph),,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; MoM-Priority,"<p>Profile, presence, calendar, Teams, To Do.</p>",
+,User Story,,,Graph delegated permissions and admin consent,,New,1,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; Sprint 1; MoSCoW-Must; MoM-Priority,"<p>As an admin I want the Graph permissions consented so that profile, presence, calendar, mail and Teams features work.</p>","<ul><li>Permissions: User.Read, User.ReadBasic.All, Presence.Read.All, Calendars.ReadWrite, Tasks.ReadWrite, Chat.ReadWrite (as needed)</li><li>Admin consent granted in tenant</li><li>OBO flow verified for each feature</li></ul>"
+,Task,,,,[OPS] Configure API permissions and request admin consent,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1; MoM-Priority,,
+,Task,,,,[BE] Verify OBO for each Graph call used by modules,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[DOC] Permission justification doc for IT security,New,1,,,1,1,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1; MoM-Priority,,
+,User Story,,,Graph throttling and caching,,New,2,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP17; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As the system I want Graph calls cached and throttle-aware so that we stay within limits.</p>,"<ul><li>Honour Retry-After; batch requests where possible</li><li>Cache profile/photo (24h), presence (60s)</li></ul>"
+,Task,,,,[BE] Graph batching + Retry-After handling,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] Distributed cache for profile/photo/presence,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Throttle simulation tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,Epic,"EP18 Data Platform, Admin & Migration",,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Production data model, seed/master data, admin console and backup.</p>",
+,Feature,,Data Model & Persistence,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP18,<p>Cosmos DB for MongoDB vCore collections replacing the 14 Supabase tables.</p>,
+,User Story,,,Production data model and indexes,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP18; Sprint 1; MoSCoW-Must,<p>As a developer I want a reviewed data model so that queries are fast and costs predictable.</p>,"<ul><li>Collections: feed_posts, ideas, kudos, events, tickets, rooms, room_bookings, tasks, polls, poll_votes, communities, community_members, conversations, messages, notifications, reminders, ai_documents, ai_chunks, users, audit</li><li>Indexes for every query path; vector index for ai_chunks</li><li>Schema JSON documented in specs/</li></ul>"
+,Task,,,,[DB] Map Supabase tables to Cosmos collections; document in specs/data,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; DB; Sprint 1,,
+,Task,,,,"[DB] Define indexes and unique constraints (votes, slots, HD counter)",New,1,,,3,3,Development,onespace,,,OneSpace-Prod; DB; Sprint 1,,
+,Task,,,,[DB] Index migration script run by pipeline,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; DB; Sprint 1,,
+,Task,,,,[QA] Query plan review for top 20 queries,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,User Story,,,Seed and master data,,New,2,Architectural,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP18; Sprint 1; MoSCoW-Must,"<p>As an admin I want master data seeded (rooms, categories, kudos badges, prompts, ticket categories, community categories) so that the app is usable on day 1.</p>",<ul><li>Idempotent seed per environment</li><li>Demo data only in Dev/Test</li></ul>
+,Task,,,,[DB] Idempotent seed tool (master data),New,2,,,2,2,Development,onespace,,,OneSpace-Prod; DB; Sprint 1,,
+,Task,,,,[DB] Demo data set for Dev/Test from prototype content,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; DB; Sprint 1,,
+,User Story,,,"Backup, restore and DR",,New,1,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP18; Sprint 4; MoSCoW-Must,<p>As an operator I want backups and a tested restore so that data can be recovered.</p>,<ul><li>Cosmos vCore backups configured; Blob soft delete + versioning</li><li>Restore tested to Test env; RPO 24h / RTO 4h documented</li></ul>
+,Task,,,,[OPS] Configure backup/retention and blob soft delete,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Task,,,,[OPS] Perform restore drill,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Task,,,,[DOC] DR runbook,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 4,,
+,Feature,,Admin Console,,,New,2,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP18,<p>Central admin area.</p>,
+,User Story,,,Admin console landing,,New,2,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP18; Sprint 3; MoSCoW-Should,"<p>As an admin I want one admin area with links to rooms, kudos prompts, AI documents, moderation, feature flags and users so that management is simple.</p>",<ul><li>Admin route guarded by admin roles</li><li>Feature flags per module (e.g. Gaming on/off)</li><li>Basic usage stats per module</li></ul>
+,Task,,,,[BE] Feature flag store (Azure App Configuration),New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[FE] Admin landing with module cards and flags,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3,,
+,Task,,,,[BE] Usage stats query,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3,,
+,Task,,,,[QA] Admin console tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3,,
+,Epic,EP19 Quality Engineering,,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Test strategy, automation, performance, security and UAT.</p>",
+,Feature,,Test Strategy & Automation,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19,<p>Automated coverage for every module.</p>,
+,User Story,,,Test strategy and test plan,,New,1,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 1; MoSCoW-Must,<p>As QA lead I want a test plan covering all modules so that quality is measurable.</p>,<ul><li>Test plan in Azure Test Plans with suites per epic</li><li>Entry/exit criteria per sprint</li><li>Defect severity definitions and triage cadence</li></ul>
+,Task,,,,"[QA] Write test strategy (levels, tools, environments, data)",New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Task,,,,[QA] Create Azure Test Plan and suites per module,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Task,,,,[QA] Define defect workflow and severity matrix,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,User Story,,,E2E automation framework,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 1; MoSCoW-Must,<p>As QA I want a Playwright E2E framework running in CI so that regressions are caught automatically.</p>,<ul><li>Playwright with Entra test users (non-interactive)</li><li>Runs against Test env in CD pipeline</li><li>Smoke suite &lt; 10 min</li></ul>
+,Task,,,,"[QA] Set up Playwright project, page objects and auth fixture",New,1,,,5,5,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,Task,,,,[OPS] Add E2E stage to pipeline with test reports,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1,,
+,Task,,,,[QA] Smoke suite for shell + login,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1,,
+,User Story,,,E2E regression suites per module,,New,1,Architectural,13,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 4; MoSCoW-Must,<p>As QA I want E2E suites for every module so that each sprint is regression-tested.</p>,"<ul><li>Suites: Home/Feed, Idea Hub, Kudos, Calendar/Events, Helpdesk, Rooms, Tasks, Polls, Communities, Messages, Notifications, AI assistant</li><li>&gt;= 1 happy path + key negative path per story</li></ul>"
+,Task,,,,[QA] E2E: Home & Feed,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Idea Hub,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Kudos Wall,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Calendar & Events,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Helpdesk (employee + agent),New,1,,,4,4,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Room Booking incl. conflicts,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: My Tasks,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Polls,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Communities,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Messages (two-user),New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: Notifications,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[QA] E2E: AI assistant scripted conversations,New,1,,,4,4,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Feature,,Non-functional Testing,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19,"<p>Performance, security and compatibility.</p>",
+,User Story,,,Performance and load testing,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 4; MoSCoW-Must,<p>As a product owner I want the system to handle expected load so that go-live is safe.</p>,"<ul><li>Azure Load Testing: 500 concurrent users, p95 &lt; 1.5s for GraphQL reads, &lt; 2.5s writes</li><li>200 concurrent chat connections</li><li>Lighthouse performance &gt;= 85 on Home</li></ul>"
+,Task,,,,[QA] Author JMeter/Locust scripts for top journeys,New,1,,,5,5,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,"[QA] Run load test, capture results",New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,"[BE] Fix performance bottlenecks (indexes, caching, N+1 via DataLoader)",New,1,,,6,6,Development,onespace,,,OneSpace-Prod; BE; Sprint 4,,
+,Task,,,,[FE] Bundle size and lazy-loading optimisation,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 4,,
+,User Story,,,Security testing and pen test,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 4; MoSCoW-Must,<p>As a security owner I want a pen test before go-live so that critical vulnerabilities are fixed.</p>,<ul><li>Authenticated ZAP full scan</li><li>Internal/external pen test; no open High/Critical findings</li><li>Dependency scan clean of High/Critical</li></ul>
+,Task,,,,[SEC] Authenticated ZAP full scan and triage,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; SEC; Sprint 4,,
+,Task,,,,[SEC] Coordinate pen test and track findings,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; SEC; Sprint 4,,
+,Task,,,,[BE] Remediate security findings,New,1,,,6,6,Development,onespace,,,OneSpace-Prod; BE; Sprint 4,,
+,User Story,,,Cross-browser and device testing,,New,2,Architectural,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 4; MoSCoW-Must,<p>As an employee I want OneSpace to work on my browser and phone.</p>,"<ul><li>Edge, Chrome, Safari, Firefox latest; iOS Safari &amp; Android Chrome</li><li>390px mobile with no horizontal scroll</li></ul>"
+,Task,,,,[QA] Cross-browser matrix execution,New,2,,,4,4,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[FE] Fix browser/device defects,New,2,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 4,,
+,Feature,,User Acceptance Testing,,,New,1,Architectural,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19,<p>Business sign-off.</p>,
+,User Story,,,UAT with pilot group,,New,1,Architectural,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 4; MoSCoW-Must,<p>As a product owner I want a pilot group to accept the release so that we go live with confidence.</p>,"<ul><li>UAT scripts per module</li><li>20-30 pilot users across HR, IT, Facilities, Engineering</li><li>Sign-off with no open Sev1/Sev2 defects</li></ul>"
+,Task,,,,[BA] Write UAT scripts per module,New,1,,,4,4,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4,,
+,Task,,,,[BA] Recruit pilot users and run UAT kickoff,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4,,
+,Task,,,,"[QA] Support UAT, log and triage defects",New,1,,,6,6,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Task,,,,[BA] Obtain UAT sign-off,New,1,,,1,1,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4,,
+,User Story,,,Bug fixing and stabilisation buffer,,New,1,Architectural,8,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP19; Sprint 4; MoSCoW-Must,<p>As a team we want reserved capacity for defects found in UAT so that the release date holds.</p>,<ul><li>All Sev1/Sev2 fixed; Sev3 triaged with dates</li></ul>
+,Task,,,,[FE] UAT defect fixes (UI),New,1,,,12,12,Development,onespace,,,OneSpace-Prod; FE; Sprint 4,,
+,Task,,,,[BE] UAT defect fixes (API),New,1,,,12,12,Development,onespace,,,OneSpace-Prod; BE; Sprint 4,,
+,Task,,,,[QA] Defect retest and regression,New,1,,,8,8,Testing,onespace,,,OneSpace-Prod; QA; Sprint 4,,
+,Epic,"EP20 Release, Go-Live & Hypercare",,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod,"<p>Production readiness, cutover, training and hypercare.</p>",
+,Feature,,Production Readiness,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP20,<p>Go/no-go criteria.</p>,
+,User Story,,,Production readiness review,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP20; Sprint 4; MoSCoW-Must,<p>As a release manager I want a readiness checklist signed off so that go-live risk is controlled.</p>,"<ul><li>Checklist: security, performance, backups, monitoring, runbooks, support model, licences, privacy review</li><li>Go/No-go meeting held with stakeholders</li></ul>"
+,Task,,,,[DOC] Production readiness checklist,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 4,,
+,Task,,,,[DOC] Privacy / data protection review (DPIA light),New,1,,,3,3,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 4,,
+,Task,,,,[BA] Go/No-go meeting,New,1,,,1,1,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4,,
+,User Story,,,Runbooks and support model,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP20; Sprint 4; MoSCoW-Must,<p>As support I want runbooks and an escalation path so that incidents are handled.</p>,"<ul><li>Runbooks: deploy, rollback, incident, Zoho/Graph outage, AI provider outage</li><li>L1 (IT helpdesk) / L2 (dev team) model and on-call rota</li></ul>"
+,Task,,,,[DOC] Write operational runbooks,New,1,,,4,4,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 4,,
+,Task,,,,[DOC] Support model and escalation matrix,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 4,,
+,Feature,,Go-Live & Adoption,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP20,<p>Cutover and change management.</p>,
+,User Story,,,Production cutover,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP20; Sprint 4; MoSCoW-Must,<p>As a release manager I want a rehearsed cutover so that launch is smooth.</p>,"<ul><li>Cutover plan rehearsed on Test</li><li>Prod deploy, seed master data, smoke test</li><li>Prototype (bolt.host) URL retired/redirected</li></ul>"
+,Task,,,,[OPS] Cutover rehearsal on Test,New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Task,,,,[OPS] Production deployment and smoke test,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Task,,,,[OPS] Redirect/retire prototype URL and DNS,New,1,,,1,1,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,User Story,,,Training and launch communications,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP20; Sprint 4; MoSCoW-Must,<p>As HR/Internal Comms I want guides and launch comms so that employees adopt OneSpace.</p>,"<ul><li>Quick-start guide and 2-min video per key module</li><li>Launch announcement post + email</li><li>Admin guide for HR, IT, Facilities</li></ul>"
+,Task,,,,[DOC] End-user quick-start guide,New,2,,,3,3,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 4,,
+,Task,,,,"[DOC] Admin guide (rooms, tickets, ideas, documents, moderation)",New,2,,,3,3,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 4,,
+,Task,,,,[BA] Launch communication plan and content,New,2,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4,,
+,User Story,,,Hypercare (first 2 weeks),,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP20; Sprint 4; MoSCoW-Must,<p>As a product owner I want daily monitoring and fast fixes after launch so that early issues are resolved.</p>,<ul><li>Daily triage stand-up for 10 business days</li><li>Hotfix path tested</li><li>Adoption metrics reviewed weekly</li></ul>
+,Task,,,,[OPS] Hypercare dashboard and daily health review,New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 4,,
+,Task,,,,[BA] Collect feedback and log enhancements to backlog,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4,,
+,Epic,EP21 HR Policies,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,"<p>Central HR policy library: browse, search, read and acknowledge policies (source: ComplyKaro / SharePoint document import), plus AI Q&amp;A over policies.</p>",
+,Feature,,Policy Library,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; MoM-Priority,<p>Browse and read HR policies.</p>,
+,User Story,,,Browse HR policies by category,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As an employee I want to browse HR policies by category so that I can find the rule I need.</p>,"<ul><li>Categories (e.g. Leave, Attendance, Travel, Code of Conduct, Benefits, IT Usage, POSH)</li><li>Policy card: title, category, version, effective date, owner</li><li>Location/entity-specific policies shown only to applicable employees</li></ul>"
+,Task,,,,"[BA] Confirm policy categories, owners and applicability rules with HR",New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 2; MoM-Priority,,
+,Task,,,,"[DB] Policy collection (title, category, version, effectiveDate, applicability, fileRef, contentText)",New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] policies(filter) query with applicability filtering,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] HR Policies page with category navigation and cards,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Browse and applicability tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Read a policy with version history,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As an employee I want to open a policy and see its current version and change history so that I follow the latest rule.</p>,<ul><li>In-app viewer for PDF/DOCX/HTML</li><li>Version history with summary of changes</li><li>Download allowed per policy setting</li></ul>
+,Task,,,,[BE] Policy detail + versions query; SAS link for file,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Policy viewer (PDF/HTML) and version history panel,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Viewer tests across file types,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Search policies,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As an employee I want full-text search across policies so that I find answers fast.</p>,<ul><li>Keyword search over title and content with highlighted snippets</li><li>Results ranked; filters by category</li></ul>
+,Task,,,,[BE] Text index + searchPolicies extension for library (reuse FR-3 hybrid retrieval),New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Search bar with result snippets,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Search relevance tests (20 sample queries),New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,Feature,,Policy Administration & Acknowledgement,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; MoM-Priority,<p>HR publishes policies and tracks acknowledgement.</p>,
+,User Story,,,HR publishes and updates policies,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As an HR admin I want to upload, version and publish policies so that employees always see the current version.</p>",<ul><li>Upload new policy / new version with effective date and change summary</li><li>Draft -&gt; Published -&gt; Archived states</li><li>Sync from ComplyKaro or SharePoint import (no public ComplyKaro API: scheduled import)</li><li>HRAdmin role only</li></ul>
+,Task,,,,"[BE] Policy admin mutations (create, new version, publish, archive)",New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] Scheduled import job from SharePoint/ComplyKaro export folder,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Policy admin screens,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Publishing workflow tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Policy acknowledgement tracking,,New,2,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As HR I want employees to acknowledge mandatory policies so that compliance is evidenced.</p>,"<ul><li>Mandatory policies show ""I have read and understood"" button</li><li>Pending acknowledgements appear on Home and in notifications</li><li>HR report: acknowledged / pending by department, export CSV</li></ul>"
+,Task,,,,[BE] Acknowledgement model + mutation + pending query,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] HR acknowledgement report + CSV export,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,"[FE] Acknowledge button, Home pending widget, HR report page",New,2,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Acknowledgement and report tests,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Ask the AI about policies,,New,1,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP21; Sprint 3; MoSCoW-Must; MoM-Priority,<p>As an employee I want to ask the assistant policy questions and get answers with links to the policy so that I don't read whole documents.</p>,<ul><li>Assistant answers cite policy title + version and deep-link to viewer</li><li>Only applicable policies used for the user</li></ul>
+,Task,,,,[AI] Point policy tool at library index with applicability filter + deep links,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; AI; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Policy Q&A golden set (20 Qs),New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Epic,EP22 ITILITE Travel Desk Integration,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,"<p>Integrate ITILITE (itilite.com) travel management with OneSpace: Entra ID SSO into ITILITE and API integration to show each signed-in user's travel data (trips, bookings, approvals) in OneSpace. Booking, policy and approvals remain in ITILITE; OneSpace surfaces data and deep-links.</p>",
+,Feature,,ITILITE Discovery & Access,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; MoM-Priority,"<p>Confirm API capability, credentials and user identity mapping.</p>",
+,User Story,,,Spike: ITILITE API and SSO discovery,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 1; MoSCoW-Must; MoM-Priority,"<p>As a tech lead I want ITILITE API documentation, sandbox access and SSO requirements confirmed so that the integration design is correct.</p>","<ul><li>ITILITE account manager engaged; API docs, sandbox/UAT tenant and credentials obtained</li><li>Confirmed: auth model (API key / OAuth client credentials), rate limits, available endpoints (employees, trips, bookings, approvals, expenses), webhooks</li><li>User identity key agreed (work email / employee ID) matching Entra ID token claims</li><li>Data-sharing/DPA approval from IT security</li><li>Integration design note (ADR-0007) signed off</li></ul>"
+,Task,,,,"[BA] Engage ITILITE account manager; request API docs, sandbox and SSO metadata",New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,[BE] Test ITILITE API in sandbox (Postman collection) and record sample payloads,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,"[BE] Confirm user identity mapping (email/employee ID) across Entra, Zoho and ITILITE",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 1; MoM-Priority,,
+,Task,,,,[SEC] Security & data-privacy review of ITILITE data flow,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; SEC; Sprint 1; MoM-Priority,,
+,Task,,,,[DOC] Write ADR-0007 ITILITE integration design,New,1,,,2,2,Documentation,onespace,,,OneSpace-Prod; DOC; Sprint 1; MoM-Priority,,
+,User Story,,,Employee provisioning to ITILITE,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 1; MoSCoW-Must; MoM-Priority,"<p>As an admin I want employees, grades, managers and cost centres kept in sync in ITILITE so that SSO users have the right travel policy and approver.</p>","<ul><li>Provisioning source agreed: ITILITE HRMS connector for Zoho People or SCIM from Entra ID</li><li>New joiners provisioned, leavers deactivated within 24h</li><li>Manager and grade mapped for approval workflow and policy</li></ul>"
+,Task,,,,[OPS] Configure provisioning (ITILITE Zoho People connector or Entra SCIM),New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1; MoM-Priority,,
+,Task,,,,"[BA] Map attributes: email, employee ID, grade, department, manager, cost centre",New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,[QA] Verify joiner/mover/leaver sync in sandbox,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,Feature,,ITILITE Single Sign-On,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; MoM-Priority,<p>Company SSO into ITILITE from OneSpace.</p>,
+,User Story,,,Configure ITILITE SSO with Entra ID,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As an employee I want to open ITILITE with my company account so that I never enter a separate password.</p>,<ul><li>Entra ID enterprise application for ITILITE (SAML 2.0 or OIDC per ITILITE support)</li><li>User assignment via Entra group (all employees / travel-eligible)</li><li>SP- and IdP-initiated sign-in work; MFA/Conditional Access applied</li><li>ITILITE password login disabled for SSO users</li></ul>
+,Task,,,,"[OPS] Create Entra enterprise app, exchange SAML/OIDC metadata with ITILITE",New,1,,,3,3,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1; MoM-Priority,,
+,Task,,,,"[OPS] Configure claims (email, employee ID, name) and group assignment",New,1,,,2,2,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 1; MoM-Priority,,
+,Task,,,,"[QA] SSO tests: SP-initiated, IdP-initiated, unassigned user, disabled user",New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 1; MoM-Priority,,
+,User Story,,,Launch ITILITE from OneSpace,,New,1,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As an employee I want a Travel Desk page with one-click actions (Book travel, My trips, Approvals, Expenses) so that I reach ITILITE without logging in again.</p>",<ul><li>Travel Desk nav item and page in OneSpace</li><li>Deep links open ITILITE via SSO in new tab</li><li>Travel policy link to HR Policies (EP21)</li></ul>
+,Task,,,,[FE] Travel Desk page with action tiles and deep links,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Add Travel Desk to sidebar navigation,New,1,,,1,1,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Deep-link SSO tests,New,1,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,Feature,,ITILITE Data in OneSpace (API),,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; MoM-Priority,<p>Show the signed-in user's travel data via ITILITE API.</p>,
+,User Story,,,ITILITE API connector,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As the system I want a secure, resilient ITILITE API client so that OneSpace can read user travel data.</p>","<ul><li>Connector in OneSpace.Connectors; credentials in Key Vault</li><li>Current user resolved from Entra token claim (email/employee ID) - user can only see own data</li><li>Retry, timeout, circuit breaker; respects rate limits</li><li>Short-lived cache (5 min) per user</li><li>Health check includes ITILITE</li></ul>"
+,Task,,,,"[BE] Implement ItiliteClient (auth, typed DTOs from sample payloads)",New,1,,,5,5,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] User resolution from token claims + per-user authorization,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,"[BE] Polly resilience, caching and health check",New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[OPS] Store ITILITE credentials in Key Vault per environment,New,1,,,1,1,Deployment,onespace,,,OneSpace-Prod; OPS; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Contract tests with recorded ITILITE fixtures,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,My trips in OneSpace,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As an employee I want to see my upcoming and past trips with booking status in OneSpace so that I don't need to open ITILITE to check.</p>,"<ul><li>GraphQL myTrips(status) from ITILITE API</li><li>Shows destination, dates, booking status (requested / approved / booked / cancelled), PNR/hotel summary</li><li>Upcoming trip widget on Home</li><li>""View in ITILITE"" deep link per trip</li><li>Graceful message when ITILITE unavailable</li></ul>"
+,Task,,,,[BE] myTrips GraphQL query mapping ITILITE trips/bookings,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] My trips list on Travel Desk page,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Upcoming trip widget on Home,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] My trips tests incl. empty and unavailable states,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Pending travel approvals for managers,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As a manager I want to see travel requests awaiting my approval in OneSpace so that I don't delay my team's travel.</p>,<ul><li>Count + list of pending approvals from ITILITE API</li><li>Approve/reject via deep link to ITILITE (or via API if ITILITE supports it - confirmed in spike)</li><li>Shown in notifications</li></ul>
+,Task,,,,[BE] pendingTravelApprovals query,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Approvals panel on Travel Desk + badge,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Approver tests,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Travel notifications,,New,3,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 3; MoSCoW-Should; MoM-Priority,"<p>As an employee I want notifications when my trip is approved, booked or changed so that I stay informed.</p>",<ul><li>ITILITE webhook receiver (if available) or 15-min polling job</li><li>Notification centre + optional Teams message</li><li>Webhook signature validated</li></ul>
+,Task,,,,[BE] Webhook endpoint with signature validation or polling job,New,3,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Map trip events to notifications,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Notification tests,New,3,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Ask the AI about my travel,,New,3,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP22; Sprint 3; MoSCoW-Should; MoM-Priority,"<p>As an employee I want to ask ""When is my next trip?"" or ""Is my Bangalore hotel booked?"" so that I get answers instantly.</p>",<ul><li>Read-only get_my_trips tool added to allowlist</li><li>Answer cites ITILITE and includes deep link</li></ul>
+,Task,,,,[AI] get_my_trips tool (read-only) + allowlist entry,New,3,,,2,2,Development,onespace,,,OneSpace-Prod; AI; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Travel conversation tests,New,3,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Epic,EP23 Learning & Development,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,"<p>L&amp;D hub: course catalogue, enrolment, learning requests with approval, my learning progress and certificates. ASSUMPTION: catalogue managed in OneSpace with external course links (LMS integration out of scope until confirmed).</p>",
+,Feature,,Learning Catalogue & Enrolment,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; MoM-Priority,<p>Discover and enrol in learning.</p>,
+,User Story,,,Confirm L&D scope and content sources,,New,1,Business,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; Sprint 1; MoSCoW-Must; MoM-Priority,"<p>As a product owner I want L&amp;D sources confirmed (internal courses, external platforms, CMART Academy) so that the build is correct.</p>",<ul><li>Decide: internal catalogue vs LMS integration (e.g. LinkedIn Learning/Udemy) and approval needs</li><li>Signed-off requirement note</li></ul>
+,Task,,,,[BA] Workshop with L&D team; document scope,New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,"[UX] Wireframes for catalogue, course detail, my learning",New,1,,,3,3,Design,onespace,,,OneSpace-Prod; UX; Sprint 1; MoM-Priority,,
+,User Story,,,Browse learning catalogue,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As an employee I want to browse courses by skill, format and level so that I find relevant learning.</p>","<ul><li>Course card: title, provider (Internal / CMART Academy / External), format (e-learning, classroom, webinar), duration, level</li><li>Filters and search</li><li>Recommended for my role (by job title/department)</li></ul>"
+,Task,,,,"[DB] Course collection (title, provider, format, duration, level, skills[], url, sessions[])",New,1,,,1,1,Development,onespace,,,OneSpace-Prod; DB; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] courses(filter) query + role recommendations,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Catalogue page with filters and search,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Catalogue tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Enrol in a course or session,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; Sprint 3; MoSCoW-Must; MoM-Priority,<p>As an employee I want to enrol in a course or classroom session so that I can attend.</p>,<ul><li>Self-enrol for open courses; seat limits for sessions with waitlist</li><li>Calendar invite for classroom/webinar sessions</li><li>Withdraw before start</li></ul>
+,Task,,,,[BE] enrol / withdraw mutations with seat limit + waitlist,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Outlook invite for sessions via Graph,New,1,,,2,2,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Enrol/withdraw UI and session picker,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Enrolment and waitlist tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Learning request with manager approval,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As an employee I want to request paid/external training with manager approval so that my development is funded.</p>,"<ul><li>Request: course, provider, cost, dates, justification</li><li>Manager then L&amp;D approval (reuse approval engine from Travel Desk)</li><li>Status tracking</li></ul>"
+,Task,,,,[BE] LearningRequest model using shared approval engine,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Learning request form and status,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Learning request approval tests,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Feature,,My Learning & L&D Admin,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; MoM-Priority,<p>Progress tracking and administration.</p>,
+,User Story,,,My learning dashboard and certificates,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; Sprint 3; MoSCoW-Must; MoM-Priority,"<p>As an employee I want to see my enrolments, completions, hours and certificates so that I track my growth.</p>",<ul><li>In progress / Completed tabs; learning hours this year</li><li>Upload external certificate; download completion certificate for internal courses</li><li>Mandatory trainings with due dates highlighted</li></ul>
+,Task,,,,[BE] myLearning query + completion + certificate upload,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Certificate PDF generation for internal completions,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] My learning dashboard,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Progress and certificate tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,"L&D admin: manage courses, sessions and attendance",,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP23; Sprint 3; MoSCoW-Must; MoM-Priority,"<p>As an L&amp;D admin I want to manage courses, sessions and mark attendance so that records are accurate.</p>","<ul><li>CRUD courses and sessions; assign mandatory training to groups/departments</li><li>Mark attendance and completion in bulk</li><li>Reports: completion %, hours by department, CSV export</li></ul>"
+,Task,,,,[BE] Course/session admin mutations + mandatory assignment,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[BE] Attendance bulk update + L&D reports,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] L&D admin screens,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Admin and report tests,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Epic,EP24 CMART Academy,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,"<p>CMART Academy training portal inside OneSpace: structured curricula (Module &gt; Topic &gt; Subtopic), slide decks/videos, quizzes, progress tracking and completion certificates. Completions feed the L&amp;D learning record.</p>",
+,Feature,,Academy Content & Learning Experience,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; MoM-Priority,<p>Structured curricula for learners.</p>,
+,User Story,,,Confirm Academy curricula and content formats,,New,1,Business,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 1; MoSCoW-Must; MoM-Priority,"<p>As a product owner I want the Academy curricula and existing content (PPTX decks, videos, documents) inventoried so that we can load it.</p>","<ul><li>Inventory of modules/topics/subtopics and assets</li><li>Decide hosting: decks as PDF/HTML, videos via Stream/Blob</li><li>Signed-off content list for go-live</li></ul>"
+,Task,,,,[BA] Inventory existing CMART Academy modules and assets,New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,"[UX] Wireframes: academy home, module page, lesson player",New,1,,,3,3,Design,onespace,,,OneSpace-Prod; UX; Sprint 1; MoM-Priority,,
+,User Story,,,Academy home and module catalogue,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 2; MoSCoW-Must; MoM-Priority,<p>As a learner I want to see Academy modules with progress so that I know what to learn next.</p>,"<ul><li>Module cards with topic count, duration and my progress %</li><li>Learning paths (ordered modules) by role</li><li>Continue where I left off</li></ul>"
+,Task,,,,"[DB] Academy model: Module > Topic > Subtopic/Lesson, LearningPath, Progress",New,1,,,2,2,Development,onespace,,,OneSpace-Prod; DB; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] academyModules + learningPaths + myProgress queries,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Academy home and module catalogue,New,1,,,5,5,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Catalogue and progress tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,"Lesson player (slides, video, documents)",,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 3; MoSCoW-Must; MoM-Priority,"<p>As a learner I want to view lessons (slide decks, videos, documents) in the browser so that I can learn without downloads.</p>","<ul><li>Viewer for PDF/converted slides, video streaming, rich text</li><li>Mark lesson complete automatically at end / manually</li><li>Previous / next navigation within topic</li></ul>"
+,Task,,,,[BE] Lesson content delivery (SAS/streaming) + completion mutation,New,1,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Lesson player with slide/video/document viewers,New,1,,,6,6,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Player tests across content types and mobile,New,1,,,3,3,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Topic quizzes and assessments,,New,2,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As a learner I want a short quiz after each topic so that I can check my understanding.</p>,<ul><li>MCQ / multi-select questions; pass mark configurable</li><li>Attempts recorded; retry allowed</li><li>Score feeds module completion</li></ul>
+,Task,,,,"[BE] Quiz model, attempt submission and scoring",New,2,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Quiz UI with results,New,2,,,4,4,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Quiz scoring tests,New,2,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,User Story,,,Academy completion certificate,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 3; MoSCoW-Should; MoM-Priority,<p>As a learner I want a certificate when I complete a module or path so that my achievement is recorded.</p>,<ul><li>Branded CMART Academy certificate PDF</li><li>Completion written to L&amp;D learning record (EP23)</li><li>Feed/kudos-style celebration post (optional)</li></ul>
+,Task,,,,[BE] Certificate generation + L&D record sync,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Certificate download and completion screen,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Certificate tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Feature,,Academy Administration,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; MoM-Priority,<p>Content authoring and reporting.</p>,
+,User Story,,,Academy content management,,New,1,Business,5,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As an Academy admin I want to create modules, topics and lessons and upload content so that the curriculum stays current.</p>",<ul><li>CRUD Module/Topic/Subtopic with ordering (drag to reorder)</li><li>Upload PPTX/PDF/video; PPTX converted to PDF for viewing</li><li>Draft / Published states; AcademyAdmin role</li></ul>
+,Task,,,,[BE] Academy authoring mutations + ordering,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[BE] PPTX-to-PDF conversion job,New,1,,,4,4,Development,onespace,,,OneSpace-Prod; BE; Sprint 2; MoM-Priority,,
+,Task,,,,[FE] Authoring screens with tree editor,New,1,,,6,6,Development,onespace,,,OneSpace-Prod; FE; Sprint 2; MoM-Priority,,
+,Task,,,,[QA] Authoring tests,New,1,,,2,2,Testing,onespace,,,OneSpace-Prod; QA; Sprint 2; MoM-Priority,,
+,User Story,,,Bulk load existing Academy content,,New,1,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 4; MoSCoW-Must; MoM-Priority,<p>As an Academy admin I want existing curricula loaded before go-live so that learners have content on day 1.</p>,<ul><li>All signed-off modules loaded and published in Prod</li><li>Spot-check of 100% of modules by content owner</li></ul>
+,Task,,,,[DB] Bulk import script (folder/manifest to Academy model),New,1,,,4,4,Development,onespace,,,OneSpace-Prod; DB; Sprint 4; MoM-Priority,,
+,Task,,,,[BA] Content owner verification,New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4; MoM-Priority,,
+,User Story,,,Academy progress reports,,New,2,Business,3,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP24; Sprint 3; MoSCoW-Should; MoM-Priority,"<p>As an Academy admin I want progress and quiz reports by learner, module and department so that I can measure adoption.</p>","<ul><li>Completion %, average quiz score, active learners; CSV export</li></ul>"
+,Task,,,,[BE] Academy reporting aggregations + export,New,2,,,3,3,Development,onespace,,,OneSpace-Prod; BE; Sprint 3; MoM-Priority,,
+,Task,,,,[FE] Reports page,New,2,,,2,2,Development,onespace,,,OneSpace-Prod; FE; Sprint 3; MoM-Priority,,
+,Task,,,,[QA] Report tests,New,2,,,1,1,Testing,onespace,,,OneSpace-Prod; QA; Sprint 3; MoM-Priority,,
+,Epic,EP25 Programme Governance & Reporting,,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; MoM-Priority,<p>Plan sign-off on 18 Nov and weekly progress updates to the team through mid-December.</p>,
+,Feature,,Planning & Milestones,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; MoM-Priority,<p>Plan baseline and milestones.</p>,
+,User Story,,,Plan review and sign-off - 18 Nov 2026,,New,1,Business,2,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As the programme sponsor I want the delivery plan reviewed and signed off on 18 Nov so that scope and dates are baselined.</p>,"<ul><li>Backlog imported to Azure DevOps and groomed (estimates, owners, sprints)</li><li>Scope confirmed against meeting minutes (SSO, Calendar, Zoho access, HR Policies, Travel Desk, L&amp;D, CMART Academy)</li><li>Team capacity vs plan reviewed; de-scope list agreed</li><li>Plan baselined; milestones dated</li></ul>"
+,Task,,,,"[BA] Import backlog, assign owners and confirm sprint dates",New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,[BA] Capacity planning and de-scope proposal,New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,[BA] Prepare plan review deck,New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,[BA] Run 18 Nov plan review meeting and record decisions,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Feature,,Weekly Progress Updates,,,New,1,Business,,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; MoM-Priority,<p>Weekly status shared with the team.</p>,
+,User Story,,,Weekly progress update - Week 1 (20 Nov),,New,1,Business,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; Sprint 1; MoSCoW-Must; MoM-Priority,"<p>As a stakeholder I want a weekly progress update so that I know status, risks and next steps.</p>","<ul><li>Update shared by Friday: burndown, completed vs planned, risks/issues, decisions needed, next week plan</li><li>Sprint review demo held</li></ul>"
+,Task,,,,[BA] Prepare Week 1 status report (ADO dashboard + summary),New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,Task,,,,[BA] Sprint 1 review/demo and retrospective,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
+,User Story,,,Weekly progress update - Week 2 (27 Nov),,New,1,Business,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; Sprint 2; MoSCoW-Must; MoM-Priority,"<p>As a stakeholder I want a weekly progress update so that I know status, risks and next steps.</p>","<ul><li>Update shared by Friday with burndown, risks and next steps</li><li>Sprint review demo held</li></ul>"
+,Task,,,,[BA] Prepare Week 2 status report,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 2; MoM-Priority,,
+,Task,,,,[BA] Sprint 2 review/demo and retrospective,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 2; MoM-Priority,,
+,User Story,,,Weekly progress update - Week 3 (4 Dec),,New,1,Business,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; Sprint 3; MoSCoW-Must; MoM-Priority,"<p>As a stakeholder I want a weekly progress update so that I know status, risks and next steps.</p>","<ul><li>Update shared by Friday with burndown, risks and next steps</li><li>Sprint review demo held</li></ul>"
+,Task,,,,[BA] Prepare Week 3 status report,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 3; MoM-Priority,,
+,Task,,,,[BA] Sprint 3 review/demo and retrospective,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 3; MoM-Priority,,
+,User Story,,,Weekly progress update - Week 4 (11 Dec) and go-live report,,New,1,Business,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; Sprint 4; MoSCoW-Must; MoM-Priority,<p>As a stakeholder I want the final weekly update with go-live status so that the programme is closed out.</p>,"<ul><li>Final update: delivered scope vs minutes, open defects, hypercare plan, phase 2 backlog</li></ul>"
+,Task,,,,[BA] Prepare Week 4 / go-live status report,New,1,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4; MoM-Priority,,
+,Task,,,,[BA] Sprint 4 review and programme retrospective,New,1,,,2,2,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 4; MoM-Priority,,
+,User Story,,,Azure DevOps progress dashboard,,New,2,Business,1,,,,onespace,16-11-2026 00:00,11-12-2026 00:00,OneSpace-Prod; EP25; Sprint 1; MoSCoW-Must; MoM-Priority,<p>As a stakeholder I want a live ADO dashboard so that progress is visible any time.</p>,"<ul><li>Widgets: sprint burndown, epic progress (MoM-Priority tag), bug trend, velocity</li></ul>"
+,Task,,,,[BA] Create shared queries and ADO dashboard,New,2,,,3,3,Requirements,onespace,,,OneSpace-Prod; BA; Sprint 1; MoM-Priority,,
