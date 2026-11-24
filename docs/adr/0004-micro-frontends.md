@@ -1,6 +1,6 @@
 # ADR 0004: Micro-frontend UI with Native Federation
 
-**Status:** Proposed (2026-11-19), for review by Rahul (Enterprise Architect)
+**Status:** Deferred (2026-11-24). Review questioned the complexity for a small team; default is a modular single Angular app with lazy-loaded feature libraries (see architecture doc §5a). Revisit when several teams need independent UI releases. Originally Proposed 2026-11-19.
 
 **Context:** The production backlog has 25 epics (Feed, Ideas, Kudos, Helpdesk, Room Booking, HR Policies, Academy, Chat, Games …). We want small teams to build and release their own UI modules without waiting on, or breaking, other teams. Today the UI is a single Angular 20 app (`ui/`), so every change ships in one build and one release.
 

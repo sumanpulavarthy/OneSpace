@@ -1,6 +1,6 @@
 # ADR 0002: Azure Cosmos DB for MongoDB (vCore)
 
-**Status:** Accepted (2026-11-10)
+**Status:** Superseded by [ADR 0005](0005-kubernetes-hosting.md) (2026-11-24). Previously Accepted (2026-11-10).
 
 **Context:** The brief names Cosmos DB, while the PRD names MongoDB + Atlas Search. Phase 0 needs two collections: query logs with a TTL, and a policy cache with text search (vector search later).
 
